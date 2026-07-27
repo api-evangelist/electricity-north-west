@@ -1,0 +1,378 @@
+aid: electricity-north-west
+name: Electricity North West
+review:
+  question: >-
+    Does Electricity North West publish a documented public API, and does an energy
+    data mandate apply to it in a way it has actually implemented?
+  answer: true
+  date: '2026-07-27'
+  reviewer: API Evangelist
+  homeMarket: United Kingdom
+  tier: network-distributor
+  corporateNote: |
+    Iberdrola acquired Electricity North West and, on 2025-08-05, the company was
+    renamed SP Electricity North West and given the ScottishPower / Iberdrola brand
+    identity. The open data portal already carries the new name and has re-titled
+    every dataset with an "SP ENW -" prefix. The legal/trading name in the catalogue
+    is therefore SP Electricity North West; the network is still commonly referenced
+    as ENWL and the primary domain is still enwl.co.uk.
+  summary: |
+    Electricity North West DOES publish a real, documented, machine-readable API — but
+    it is a market/network open-data API, not a consumer-data API. The developer
+    surface is an Opendatasoft-hosted open data portal at
+    electricitynorthwest.opendatasoft.com carrying 146 datasets, fronted by the
+    Opendatasoft Explore REST API at v2.1 and v2.0, each with a genuine OpenAPI 3.0.3
+    contract served from the live host, plus an in-portal API console and a DCAT-AP
+    catalogue export. There is no consumer usage/billing API, and no UK mandate
+    requires one. The corporate site www.enwl.co.uk is entirely unreachable to
+    non-browser clients — a Cloudflare managed challenge returns HTTP 403 to every
+    path probed, including /robots.txt and /favicon.ico.
+
+mandate:
+  regime: other
+  status: live-implemented
+  regimeVerbatim: |
+    The obligation that binds this organization is an OPEN DATA duty imposed by the
+    energy regulator, not a consumer data right.
+
+    Ofgem's Data Best Practice Guidance applies to licensees under the RIIO-2 price
+    controls, including electricity distribution network operators under RIIO-ED2,
+    via the digitalisation special licence condition. Its governing principle is that
+    energy system data starts from a position of "presumed open" unless there is a
+    specific, evidenced reason to withhold it (privacy, security, negative consumer
+    impact). Source document probed: Ofgem, "Data Best Practice Guidance" v3.0 —
+    https://www.ofgem.gov.uk/sites/default/files/2024-10/Track_Changes_Data_Best_Practice_Guidance_v301728394292260.pdf
+
+    Explicitly NOT applicable to this organization:
+      - cdr-energy: the Australian Consumer Data Right has no UK effect whatsoever.
+      - green-button-ontario / green-button-voluntary: no Green Button or ESPI
+        reference of any kind was found on the portal, in either OpenAPI document,
+        or in the 146-dataset catalogue.
+      - smart-meter-infrastructure: Great Britain's smart-meter programme did produce
+        a licensed monopoly data carrier — the Smart Data Communications Company
+        (Smart DCC) — but that is an INFRASTRUCTURE mandate for regulated market
+        participants, not a consumer data-portability right, and it does not oblige
+        a DNO to publish a public API. Recorded here so the distinction is on the
+        record; it is not the regime this organization implements.
+    There is no UK statutory consumer energy data-portability right equivalent to
+    the CDR. That absence is a finding, not an omission.
+  howVerified: |
+    VERIFIED AS IMPLEMENTED, not merely claimed. The evidence is a live API, not a
+    press release or a compliance page.
+
+      GET https://electricitynorthwest.opendatasoft.com/api/explore/v2.1/swagger.json
+        -> HTTP 200, 2026-07-27, application/json, 45,947 bytes.
+           Parses as OpenAPI 3.0.3. info.title "Explore API", info.version "v2.1".
+           servers[0].url = https://electricitynorthwest.opendatasoft.com/api/explore/v2.1
+           16 paths. components.securitySchemes = { apikey }.
+           Saved verbatim to
+           openapi/electricity-north-west-explore-api-v2-1-openapi.json
+
+      GET https://electricitynorthwest.opendatasoft.com/api/v2/swagger.json
+        -> HTTP 200, 2026-07-27, 45,831 bytes. OpenAPI 3.0.3, info.version "v2.0",
+           servers[0].url = https://electricitynorthwest.opendatasoft.com/api/explore/v2.0
+           16 paths. Saved verbatim to
+           openapi/electricity-north-west-explore-api-v2-0-openapi.json
+
+      GET https://electricitynorthwest.opendatasoft.com/api/explore/v2.1/catalog/datasets?limit=3
+        -> HTTP 200 ANONYMOUSLY. total_count = 146.
+
+      GET https://electricitynorthwest.opendatasoft.com/api/explore/v2.1/catalog/facets?facet=license
+        -> HTTP 200 ANONYMOUSLY. Licence distribution across the catalogue:
+             CC BY 4.0 ................... 96 datasets
+             SP ENW Shared Licence ....... 41 datasets
+             Open Government Licence v3.0 . 8 datasets
+
+      GET https://electricitynorthwest.opendatasoft.com/api/explore/v2.1/catalog/exports/dcat
+        -> HTTP 200 ANONYMOUSLY, application/rdf+xml, 4,920,757 bytes.
+           A full DCAT-AP machine-readable catalogue of the whole portal.
+
+      GET https://electricitynorthwest.opendatasoft.com/api        -> HTTP 200 (portal API page)
+      GET https://electricitynorthwest.opendatasoft.com/api-console/explore/v2.1/ -> HTTP 200
+    A regulator-imposed open-data duty, an actually-published portal, an actually-served
+    OpenAPI, and an actually-served DCAT catalogue. This is an implementation.
+  implementationCaveatDataPlane: |
+    RECORDED HONESTLY AND WITHOUT SPIN. The metadata plane is anonymous; the data
+    plane was NOT retrievable anonymously from this probe.
+
+      GET .../api/explore/v2.1/catalog/datasets/enwl-embedded-capacity-register-1-under-1mw/records?limit=1
+        -> HTTP 403 {"error_code":"ForbiddenAccess","message":"You don't have permission to access the requested resource"}
+      GET .../api/explore/v2.1/catalog/datasets/ecr-supplementary-data/records?limit=1   -> HTTP 403 (same body)
+      GET .../api/explore/v2.0/catalog/datasets/ecr-supplementary-data/records?limit=1   -> HTTP 403 (same body)
+      GET .../api/explore/v2.1/catalog/datasets/dfes-bsp-polygons/records?limit=1        -> HTTP 403 (same body)
+
+    Bulk export endpoints returned HTTP 200 but with ZERO DATA ROWS — header line only:
+      GET .../datasets/enwl-embedded-capacity-register-1-under-1mw/exports/csv
+        -> HTTP 200, text/csv, 1 line (column header only), while the dataset's own
+           metadata declares metas.default.records_count = 2211.
+      GET .../datasets/sp-enw-gis-conductors-copeland/exports/csv
+        -> HTTP 200, 1 line, while records_count = 21971.
+      GET .../datasets/enwl-gsp-connection-queue/exports/json -> HTTP 200, body "[]".
+
+    Two controls were run so this is not misattributed:
+      1. A deliberately invalid dataset id returned HTTP 404 NotFoundResource, not 403 —
+         so the 403 is a genuine authorization decision, not a routing artefact.
+      2. The same anonymous request shape against a PEER Opendatasoft DNO portal,
+         https://ukpowernetworks.opendatasoft.com/api/explore/v2.1/catalog/datasets/ukpn-132kv-poles-towers/records?limit=1,
+         also returned HTTP 403 — while its /catalog/datasets returned HTTP 200.
+    The portal's own shipped front-office config declares ANONYMOUS_ACCESS_ENABLED: 'true'.
+    Conclusion drawn conservatively: the record/export data plane is credentialed in
+    practice for this probe (most likely an Opendatasoft anonymous-quota or source-IP
+    policy affecting DNO portals generally, since a peer portal behaves identically),
+    and a free self-serve portal API key is the documented way in. NOT claimed: that
+    the data is unavailable to a registered user. NOT claimed: that a row of ENWL data
+    was retrieved — none was.
+
+dataStandard:
+  apiStandard: Opendatasoft Explore API v2.1 (OpenAPI 3.0.3) with DCAT-AP catalogue export
+  detail: |
+    No energy-sector data standard is implemented. Searched both harvested OpenAPI
+    documents and the portal for: Green Button, ESPI, CDR Consumer Data Standards
+    (energy), OCPP, OCPI, OpenADR, IEEE 2030.5, IEC CIM 61968 / 61970 — none appear.
+    What IS standards-shaped is the publishing layer, not the energy payload:
+      - OpenAPI 3.0.3 contracts served live at /api/explore/v2.1/swagger.json and
+        /api/v2/swagger.json.
+      - DCAT-AP catalogue serialisation at /api/explore/v2.1/catalog/exports/dcat
+        (application/rdf+xml, HTTP 200, 4.9 MB) — a real, open, machine-readable
+        catalogue standard.
+      - ODSQL (Opendatasoft Query Language) as the vendor query grammar.
+      - Open licences on the majority of datasets: CC BY 4.0 (96) and Open Government
+        Licence v3.0 (8). 41 datasets carry a bespoke "SP ENW Shared Licence" which
+        is not an open licence.
+    The dataset payloads themselves are DNO-domain shapes (embedded capacity register,
+    DFES scenarios, LV headroom, GSP connection queue, GIS conductor layers) with no
+    reference to a sector schema standard.
+
+accessAndAuth:
+  accessGate: self-serve
+  gated: true
+  authModel: |
+    API key. Both harvested OpenAPI documents declare exactly one security scheme,
+    named `apikey`, and no other. There is no OAuth2, no OpenID Connect and no mTLS
+    on any surface found.
+      https://electricitynorthwest.opendatasoft.com/.well-known/openid-configuration -> HTTP 404
+      https://electricitynorthwest.opendatasoft.com/.well-known/security.txt         -> HTTP 200
+        (generic Opendatasoft platform file: "Contact: mailto:security@opendatasoft.com")
+      https://www.enwl.co.uk/.well-known/openid-configuration -> HTTP 403 (Cloudflare challenge, indeterminate)
+    Registration is genuinely self-serve, not application-and-approval. The portal's
+    own shipped configuration on the registration page states
+    "users.registration_allowed": true and "ui.show_signup": true, and the page copy
+    reads verbatim: "Welcome to the Electricity North West Data Portal. In order to
+    obtain maximum benefit from the Portal we advise that all users should create an
+    account by completing the registration form below." and "Aside from access to our
+    data, registered users benefit from enhanced functionality to create and save
+    their bespoke maps & charts and API keys."
+    Marked gated: true because no row of data was obtainable without a credential in
+    this probe, even though signup itself is free and unreviewed.
+  whatADeveloperMustDo: |
+    To read the catalogue, dataset schemas and the DCAT-AP index: nothing at all.
+    Anonymous GET works today —
+      https://electricitynorthwest.opendatasoft.com/api/explore/v2.1/catalog/datasets
+      https://electricitynorthwest.opendatasoft.com/api/explore/v2.1/catalog/facets?facet=license
+      https://electricitynorthwest.opendatasoft.com/api/explore/v2.1/catalog/exports/dcat
+    To read actual records: create a free account at
+      https://electricitynorthwest.opendatasoft.com/pages/registration_log_in/
+    (self-serve signup form, no approval step advertised), then generate an API key
+    from the account and pass it to the Explore API. The in-portal console at
+      https://electricitynorthwest.opendatasoft.com/api-console/explore/v2.1/
+    is the interactive reference.
+    For the 41 datasets published under the bespoke "SP ENW Shared Licence" rather
+    than CC BY 4.0 or OGL v3.0, expect the licence terms to constrain reuse even once
+    the data is technically reachable; the terms page
+    https://electricitynorthwest.opendatasoft.com/terms/terms-and-conditions/
+    redirects to enwl.co.uk and returned HTTP 403 behind the Cloudflare challenge, so
+    the licence text could not be read programmatically.
+    To get a customer's own consumption data: there is no path. Electricity North West
+    is the distributor, not the supplier; household consumption sits with the energy
+    supplier and, for smart meters, with the Smart DCC. No API, no form, no standard.
+
+dataSplit:
+  consumerDataApi: false
+  marketDataOpen: true
+  finding: |
+    The split is the story, and here it runs the opposite way to the consumer-first
+    markets. Electricity North West is open on the grid and silent on the customer.
+
+    OPEN (market / network data): 146 datasets served through a documented, versioned,
+    OpenAPI-described REST API with a DCAT-AP catalogue — embedded capacity register
+    (under 1MW, 1MW and above, DSR), DFES scenarios at entire-network, primary,
+    bulk-supply-point, county, local-authority and Lake District granularity, LV
+    headroom and LV peak demand (monitored and unmonitored), 11kV network capacity,
+    PRY capacity heatmap, GSP connection queue, LV visibility load duration curves,
+    MCS low-carbon-technology counts per substation, grid charge planner, and GIS
+    conductor layers per local authority. 104 of 146 carry an open licence.
+
+    CLOSED (consumer data): nothing exists and nothing is required to. The UK has no
+    consumer energy data right. The distributor does not hold the retail relationship.
+    Green Button has no UK presence. A third party cannot obtain an individual
+    customer's usage or billing data from Electricity North West through any documented
+    API, gated or otherwise.
+
+    So a network operator can be materially more API-native than a bank in an
+    unmandated market — because the regulator mandated OPENNESS of system data rather
+    than PORTABILITY of customer data. That is a different lever pulling a different
+    surface, and it produced a real API where a consumer data right would have produced
+    a consent flow.
+
+corporateSiteBlocked:
+  note: |
+    Every path on the primary domain returned HTTP 403 with a Cloudflare managed
+    challenge interstitial ("Just a moment...", cf_chl_opt payload, cZone
+    'www.enwl.co.uk'). This includes paths that are normally always machine-readable.
+    No conclusion about the presence or absence of content on www.enwl.co.uk should be
+    drawn from these 403s — they are bot mitigation, not 404s.
+
+probes:
+  - url: https://www.enwl.co.uk/
+    status: 403
+    note: Cloudflare managed challenge.
+  - url: https://www.enwl.co.uk/future-energy/data-and-digitalisation/data-portal/
+    status: 403
+    note: Cloudflare managed challenge. This is the linked-to data portal landing page.
+  - url: https://www.enwl.co.uk/robots.txt
+    status: 403
+  - url: https://www.enwl.co.uk/sitemap.xml
+    status: 403
+  - url: https://www.enwl.co.uk/favicon.ico
+    status: 403
+    note: Reason no brand icon was captured; placeholder image used in apis.yml.
+  - url: https://www.enwl.co.uk/openapi.json
+    status: 403
+  - url: https://www.enwl.co.uk/swagger.json
+    status: 403
+  - url: https://www.enwl.co.uk/api-docs
+    status: 403
+  - url: https://www.enwl.co.uk/.well-known/openid-configuration
+    status: 403
+  - url: https://www.enwl.co.uk/.well-known/security.txt
+    status: 403
+  - url: https://api.enwl.co.uk/
+    status: 404
+  - url: https://developer.enwl.co.uk/
+    status: '000'
+    note: DNS does not resolve.
+  - url: https://developers.enwl.co.uk/
+    status: '000'
+    note: DNS does not resolve.
+  - url: https://docs.enwl.co.uk/
+    status: '000'
+    note: DNS does not resolve.
+  - url: https://data.enwl.co.uk/
+    status: '000'
+    note: DNS does not resolve.
+  - url: https://opendata.enwl.co.uk/
+    status: '000'
+    note: DNS does not resolve.
+  - url: https://news.enwl.co.uk/
+    status: 200
+    note: PRgloo-hosted newsroom. Reachable, unlike the main site.
+  - url: https://news.enwl.co.uk/rss
+    status: 404
+  - url: https://electricitynorthwest.opendatasoft.com/
+    status: 200
+    note: THE developer surface. Opendatasoft open data portal, branded SP Electricity North West.
+  - url: https://electricitynorthwest.opendatasoft.com/api
+    status: 200
+    note: Portal API page. Links the console at /api-console/explore/v2.1/.
+  - url: https://electricitynorthwest.opendatasoft.com/api-console/explore/v2.1/
+    status: 200
+  - url: https://electricitynorthwest.opendatasoft.com/explore
+    status: 200
+  - url: https://electricitynorthwest.opendatasoft.com/pages/homepage/
+    status: 200
+  - url: https://electricitynorthwest.opendatasoft.com/pages/registration_log_in/
+    status: 200
+  - url: https://electricitynorthwest.opendatasoft.com/robots.txt
+    status: 200
+    note: "Disallow: /api/ for all agents except Googlebot, which is explicitly Allow: /api/."
+  - url: https://electricitynorthwest.opendatasoft.com/.well-known/security.txt
+    status: 200
+    note: Generic Opendatasoft platform file, security@opendatasoft.com.
+  - url: https://electricitynorthwest.opendatasoft.com/.well-known/openid-configuration
+    status: 404
+  - url: https://electricitynorthwest.opendatasoft.com/openapi.json
+    status: 404
+  - url: https://electricitynorthwest.opendatasoft.com/api/explore/v2.1/swagger.json
+    status: 200
+    note: HARVESTED. OpenAPI 3.0.3, 45,947 bytes, parses.
+  - url: https://electricitynorthwest.opendatasoft.com/api/v2/swagger.json
+    status: 200
+    note: HARVESTED. OpenAPI 3.0.3 for Explore v2.0, 45,831 bytes, parses.
+  - url: https://electricitynorthwest.opendatasoft.com/api/automation/v1.0/swagger.json
+    status: 404
+  - url: https://electricitynorthwest.opendatasoft.com/api/records/1.0/search/
+    status: 404
+    note: Legacy Opendatasoft v1 search API is not served on this domain.
+  - url: https://electricitynorthwest.opendatasoft.com/api/datasets/1.0/search/
+    status: 200
+    note: Legacy v1 dataset search still responds; not listed as an API — undocumented legacy surface.
+  - url: https://electricitynorthwest.opendatasoft.com/api/explore/v2.1/catalog/datasets
+    status: 200
+    note: Anonymous. total_count 146.
+  - url: https://electricitynorthwest.opendatasoft.com/api/explore/v2.1/catalog/facets?facet=license
+    status: 200
+    note: "Anonymous. CC BY 4.0: 96, SP ENW Shared Licence: 41, Open Government Licence v3.0: 8."
+  - url: https://electricitynorthwest.opendatasoft.com/api/explore/v2.1/catalog/exports/dcat
+    status: 200
+    note: Anonymous. 4,920,757 bytes of application/rdf+xml DCAT-AP.
+  - url: https://electricitynorthwest.opendatasoft.com/api/explore/v2.1/catalog/datasets/enwl-embedded-capacity-register-1-under-1mw/records?limit=1
+    status: 403
+    note: ForbiddenAccess. Data plane requires a credential.
+  - url: https://electricitynorthwest.opendatasoft.com/api/explore/v2.1/catalog/datasets/enwl-embedded-capacity-register-1-under-1mw/exports/csv
+    status: 200
+    note: Header row only, 0 data rows, against a declared records_count of 2211.
+  - url: https://electricitynorthwest.opendatasoft.com/api/explore/v2.1/catalog/datasets/this-dataset-does-not-exist-xyz/records?limit=1
+    status: 404
+    note: Control. Proves the 403s above are authorization, not routing.
+  - url: https://ukpowernetworks.opendatasoft.com/api/explore/v2.1/catalog/datasets/ukpn-132kv-poles-towers/records?limit=1
+    status: 403
+    note: Peer-portal control. Same anonymous 403 on a different DNO's Opendatasoft portal.
+  - url: https://help.huwise.com/apis/ods-explore-v2/
+    status: 200
+    note: Vendor reference documentation for the Explore API, cited from inside the harvested spec.
+  - url: https://www.linkedin.com/company/electricity-north-west
+    status: 200
+  - url: https://api.github.com/orgs/electricitynorthwest
+    status: 404
+    note: No GitHub organization found. Also probed /orgs/enwl -> 404.
+
+sources:
+  - url: https://electricitynorthwest.opendatasoft.com/api/explore/v2.1/swagger.json
+    type: OpenAPI
+    note: Primary contract. Harvested verbatim 2026-07-27, HTTP 200.
+  - url: https://electricitynorthwest.opendatasoft.com/api/v2/swagger.json
+    type: OpenAPI
+    note: Explore v2.0 contract. Harvested verbatim 2026-07-27, HTTP 200.
+  - url: https://electricitynorthwest.opendatasoft.com/api
+    type: Portal
+    note: The portal's own API page; the only confirmed developer surface.
+  - url: https://news.enwl.co.uk/blogs/electricity-north-west-open-data-portal-a-valuable-resource-for-the-energy-sector
+    type: Blog
+    note: >-
+      Company's own account of the portal. Quotes it launched with the embedded
+      capacity register and grew to "28 data sets"; states data "can also be
+      downloaded in a number of file formats or accessed via API"; cites no Ofgem
+      obligation. The live catalogue is now 146 datasets.
+  - url: https://www.ofgem.gov.uk/sites/default/files/2024-10/Track_Changes_Data_Best_Practice_Guidance_v301728394292260.pdf
+    type: Regulation
+    note: >-
+      Ofgem Data Best Practice Guidance, the "presumed open" duty applying to RIIO-ED2
+      licensees. This is the mandate recorded above.
+  - url: https://www.iberdrola.com/press-room/news/detail/sp-electricity-north-west-unveiled-new-name-visual-identity-part-iberdrola-group
+    type: News
+    note: Iberdrola acquisition and 2025-08-05 rebrand to SP Electricity North West.
+
+actions:
+  apisYmlApisListed: 2
+  openapiHarvested: true
+  specsSaved:
+    - openapi/electricity-north-west-explore-api-v2-1-openapi.json
+    - openapi/electricity-north-west-explore-api-v2-0-openapi.json
+  notListed:
+    - surface: https://electricitynorthwest.opendatasoft.com/api/datasets/1.0/search/
+      reason: >-
+        Legacy Opendatasoft v1 dataset-search endpoint still answers HTTP 200 but is
+        not referenced from the portal's API page, has no OpenAPI on this host, and is
+        superseded by Explore v2.x. Recorded as an observation, not published as an API.
+    - surface: Consumer usage / billing API
+      reason: None exists. Nothing was invented to fill the gap.
