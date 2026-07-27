@@ -1,0 +1,211 @@
+generated: '2026-07-27'
+method: searched
+source: >-
+  https://help.opendatasoft.com/apis/ods-explore-v2/ (the vendor Explore API v2
+  reference that governs this domain), plus live response headers and error
+  bodies captured from
+  https://electricitynorthwest.opendatasoft.com/api/explore/v2.1/ on 2026-07-27,
+  and the two harvested OpenAPI documents in openapi/.
+description: >-
+  Cross-cutting request/response semantics for the SP Electricity North West
+  Explore API — the rules that apply to every one of the 16 operations rather
+  than to any single one. The defining characteristic of this API is that it is
+  read-only: the vendor states "Only the HTTP GET method is supported", which
+  makes every operation safe and idempotent by construction and removes the
+  entire class of retry-safety problems that idempotency keys exist to solve.
+  The second defining characteristic is ODSQL, a query language that gives all
+  16 endpoints a near-identical parameter surface.
+base_url: https://electricitynorthwest.opendatasoft.com/api/explore/v2.1
+api_style: REST over HTTPS, GET only, JSON responses (application/json; charset=utf-8)
+
+authentication:
+  scheme: >-
+    API key via `Authorization: Apikey <KEY>` header (recommended) or `apikey`
+    query parameter; portal session cookie; or OAuth2 bearer token.
+  anonymous: >-
+    Catalogue and dataset metadata are readable with no credential. Record data
+    on this domain is not — it returns error_code "ForbiddenAccess" and requires
+    a free registered account.
+  docs: https://help.opendatasoft.com/apis/ods-explore-v2/#section/Authentication
+  detail: authentication/electricity-north-west-authentication.yml
+
+idempotency:
+  supported: true
+  mechanism: inherent — HTTP method semantics
+  idempotency_key_header: null
+  applies_to: >-
+    All 16 operations. The API surface is GET-only by design ("Only the HTTP GET
+    method is supported" — info.description of both OpenAPI documents), so every
+    operation is both safe and idempotent under RFC 9110 section 9.2.2 and can be
+    retried without side effects.
+  retention: n/a
+  conflict_behavior: n/a
+  caveat: >-
+    There is no Idempotency-Key header and no request-deduplication contract,
+    because there are no unsafe methods to deduplicate. Retries are bounded by
+    the daily call quota, not by idempotency: a retry storm consumes quota and
+    will eventually earn a 429. See rate-limits/.
+  docs: https://help.opendatasoft.com/apis/ods-explore-v2/
+
+pagination:
+  style: offset
+  request_params:
+    limit: >-
+      Number of items to return. Default 10. Maximum 100 for a query WITHOUT a
+      group_by clause; the ceiling differs when a group_by is present. -1 is
+      accepted in the declared range.
+    offset: >-
+      Index of the first item to return, starting at 0. Minimum 0, default 0.
+  hard_ceiling: >-
+    offset + limit must remain under 10000 for a query without group_by. Deep
+    pagination past that point is not possible — use the exports endpoints, which
+    the vendor states have no record-count limitation.
+  response_fields:
+    total_count: total number of matching items
+    results: array of results
+    links: >-
+      Every response carries a `links` array of {rel, href} navigation objects
+      (rel values seen: self, source, and one per export format). This is the
+      API's hypermedia affordance and is present on all endpoints.
+  docs: https://help.opendatasoft.com/apis/ods-explore-v2/
+
+query_language:
+  name: Opendatasoft Query Language (ODSQL)
+  applies_to: all 16 operations, with near-identical parameter names
+  clauses:
+    select: >-
+      Add, remove or transform returned fields. Accepts a wildcard, a field name,
+      include()/exclude() functions, or a complex labelled expression
+      (e.g. `size * 2 as bigger_size`).
+    where: Full-text plus boolean/functional filter expression (NOT, AND, OR, …).
+    group_by: Aggregation grouping; changes the limit ceiling and available functions.
+    order_by: Comma-separated fields or aggregations with asc/desc.
+    refine: Facet-value restriction, e.g. `refine=modified:2020`.
+    exclude: Facet-value exclusion.
+    facet: Facet declaration for the facets endpoints.
+  docs: https://help.opendatasoft.com/apis/ods-explore-v2/#section/Opendatasoft-Query-Language-(ODSQL)
+  note: >-
+    ODSQL is contractually backward compatible — the vendor guarantees new syntax
+    cannot replace existing syntax within a version. This is the sparse-fields /
+    field-expansion mechanism for this API; there is no separate `expand`
+    parameter.
+
+versioning:
+  scheme: uri-path
+  current: v2.1
+  also_live: v2.0
+  mechanism: >-
+    The version is a stable path segment — /api/explore/v2.1/<resource>. There is
+    no version header and no date-pinning. Both v2.1 and v2.0 are served
+    concurrently on this domain, each with its own OpenAPI document.
+  guarantees:
+  - ODSQL is backward compatible; new syntax cannot replace existing syntax.
+  - Response bodies are stable; keys can be added but not renamed or removed.
+  - URLs and endpoints are stable.
+  breaking_changes: >-
+    Any violation of the three guarantees above ships as a new API version rather
+    than as a change to the current one. v2.1 is declared "stable and production
+    ready: no breaking change will be introduced in the future".
+  detail: lifecycle/electricity-north-west-lifecycle.yml
+
+deprecation_signaling:
+  header: ODS-Explore-API-Deprecation
+  format: >-
+    `<FEATURE_ID>: deprecation message`, multiple messages separated by `;`.
+    Documented example: "DATE_KEYS_AS_ISOFORMAT: Dates used in group keys are
+    currently returned as timestamps and will be returned as standard formatted
+    date strings in the next API version".
+  companion_header: >-
+    `Link` carries the URL of the version changelog alongside the deprecation
+    message.
+  rfc8594_sunset: false
+  exposed_cors: true
+  note: >-
+    Both headers are listed in Access-Control-Expose-Headers, so browser clients
+    can read the deprecation warning cross-origin. This is a real, machine-readable
+    deprecation channel — rarer than an RFC 8594 Sunset header but functionally
+    equivalent for feature-level warnings.
+
+request_tracing:
+  request_id_header: null
+  note: >-
+    No request-id or correlation-id header is emitted. Responses do carry
+    `vary: Accept-Language, Cookie, Host` and `content-language`.
+
+error_envelope:
+  format: bespoke JSON (NOT RFC 9457 / application/problem+json)
+  media_type: application/json; charset=utf-8
+  shapes:
+  - applies_to: 4xx other than 429
+    fields:
+      error_code: string, machine-readable (e.g. ODSQLError, ForbiddenAccess)
+      message: string, human-readable
+    example:
+      error_code: ODSQLError
+      message: 'ODSQL query is malformed: Unknown field: metas. Clause(s) containing the error(s): select.'
+  - applies_to: 429
+    fields:
+      errorcode: number (note the different spelling — no underscore)
+      reset_time: ISO 8601 timestamp
+      limit_time_unit: string
+      call_limit: number
+      error: string
+  inconsistency: >-
+    The two envelopes disagree: the general error uses `error_code` (string) +
+    `message`, the quota error uses `errorcode` (number) + `error`. A client must
+    handle both. Recorded as-is; this is the provider's contract, not ours.
+  detail: errors/electricity-north-west-problem-types.yml
+
+rate_limit_signaling:
+  headers: [X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset, X-RateLimit-dataset-Limit, X-RateLimit-dataset-Remaining, X-RateLimit-dataset-Reset]
+  observed_limit: 5000 requests/day for the whole domain, anonymous
+  reset: absolute UTC timestamp — quota resets at midnight UTC
+  status: 429
+  exposed_cors: true
+  detail: rate-limits/electricity-north-west-rate-limits.yml
+
+cors:
+  access_control_allow_origin: '*'
+  access_control_allow_methods: [POST, GET, OPTIONS]
+  access_control_allow_headers: [Authorization, X-Requested-With, Origin, ODS-API-Analytics-App, ODS-API-Analytics-Embed-Type, ODS-API-Analytics-Embed-Referrer, ODS-Widgets-Version, Accept]
+  access_control_max_age: 1000
+  note: >-
+    Fully open CORS. Combined with the anonymous metadata access this means a
+    browser app can read the catalogue with no proxy. Note the allow-methods
+    header advertises POST even though the Explore API is GET-only.
+
+caching:
+  cache_control: 'no-cache, no-store, max-age=0, must-revalidate'
+  vary: [Accept-Language, Cookie, Host]
+  etag: false
+  note: >-
+    Responses are explicitly uncacheable. Clients that poll the catalogue should
+    budget against the daily quota rather than rely on conditional requests.
+
+transport_security:
+  hsts: 'max-age=31536000; includeSubdomains'
+  x_content_type_options: nosniff
+  referrer_policy: strict-origin-when-cross-origin
+  content_security_policy: upgrade-insecure-requests
+  permissions_policy: 'midi=(), microphone=(), camera=(), magnetometer=(), gyroscope=(), fullscreen=(self), payment=()'
+  detail: security/electricity-north-west-domain-security.yml
+
+content_negotiation:
+  default: JSON
+  export_formats:
+    catalog: [csv, json, data.json, rdf, ttl, dublin_core, dcat, rss, sitemap, xlsx]
+    dataset_records: [csv, json, parquet, gpx, geojson, xlsx, and others per dataset]
+  mechanism: >-
+    Format is a path segment on the exports endpoints
+    (/catalog/exports/{format}, /catalog/datasets/{id}/exports/{format}) rather
+    than an Accept header. The available formats for a given resource are
+    discoverable at /catalog/exports and /catalog/datasets/{id}/exports.
+
+cross_links:
+  errors: errors/electricity-north-west-problem-types.yml
+  lifecycle: lifecycle/electricity-north-west-lifecycle.yml
+  authentication: authentication/electricity-north-west-authentication.yml
+  scopes: scopes/electricity-north-west-scopes.yml
+  rate_limits: rate-limits/electricity-north-west-rate-limits.yml
+  sandbox: sandbox/electricity-north-west-sandbox.yml
+  data_model: data-model/electricity-north-west-data-model.yml

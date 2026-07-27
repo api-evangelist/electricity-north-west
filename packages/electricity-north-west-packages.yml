@@ -1,0 +1,97 @@
+generated: '2026-07-27'
+method: searched
+source: >-
+  npm registry search, PyPI, and the Opendatasoft/Huwise GitHub organization,
+  probed 2026-07-27. Maven Central, NuGet, pkg.go.dev, RubyGems, Packagist and
+  crates.io were checked for an Opendatasoft or Electricity North West client and
+  returned nothing.
+description: >-
+  Electricity North West publishes NO client library of its own — it is a
+  regulated distribution network operator, not a software vendor, and its API is
+  a hosted Opendatasoft (Huwise) Explore API tenant. The client libraries below
+  are therefore split into two honest groups: libraries published by the PLATFORM
+  VENDOR that owns and versions the Explore API contract (first-party to the API,
+  not to the network operator), and clearly third-party community clients. Nothing
+  here is authored by Electricity North West.
+first_party_to: Opendatasoft SAS (rebranding to Huwise) — the API vendor
+first_party_to_provider: false
+packages:
+- language: javascript
+  registry: npm
+  name: '@opendatasoft/api-client'
+  url: https://www.npmjs.com/package/@opendatasoft/api-client
+  install: npm install @opendatasoft/api-client
+  version_seen: 21.10.1
+  repository: https://github.com/opendatasoft/ods-dataviz-sdk
+  official: true
+  published_by: Opendatasoft
+  note: >-
+    The vendor's TypeScript/JavaScript client for the Opendatasoft APIs,
+    including the Explore v2.1 catalog/dataset/records endpoints this provider
+    serves. Point it at electricitynorthwest.opendatasoft.com to use it here.
+- language: javascript
+  registry: npm
+  name: '@opendatasoft/visualizations'
+  url: https://www.npmjs.com/package/@opendatasoft/visualizations
+  install: npm install @opendatasoft/visualizations
+  version_seen: 0.35.0
+  repository: https://github.com/opendatasoft/ods-dataviz-sdk
+  official: true
+  published_by: Opendatasoft
+  kind: ui-components
+  note: Charting/map components that consume Explore API responses. See components/.
+- language: javascript
+  registry: npm
+  name: '@opendatasoft/visualizations-react'
+  url: https://www.npmjs.com/package/@opendatasoft/visualizations-react
+  install: npm install @opendatasoft/visualizations-react
+  version_seen: 0.35.0
+  repository: https://github.com/opendatasoft/ods-dataviz-sdk
+  official: true
+  published_by: Opendatasoft
+  kind: ui-components
+- language: python
+  registry: pypi
+  name: odsclient
+  url: https://pypi.org/project/odsclient/
+  install: pip install odsclient
+  version_seen: 0.8.4
+  repository: https://github.com/smarie/python-odsclient
+  official: false
+  published_by: Sylvain Marie (Schneider Electric) — community
+  note: >-
+    Self-described "nonofficial client for OpenDataSoft API". Ships a CLI
+    entry point. Recorded because it is the only maintained Python client for
+    this API surface; it is NOT first-party and gets no CLI pointer.
+- language: python
+  registry: github
+  name: opendatasoft-explore-sdk
+  url: https://github.com/opendatasoft/opendatasoft-explore-sdk
+  install: null
+  repository: https://github.com/opendatasoft/opendatasoft-explore-sdk
+  official: true
+  published_by: Opendatasoft
+  note: >-
+    Vendor Python SDK for the Explore API, source-only — last pushed 2025-09-08,
+    README is a single line, and no matching distribution exists on PyPI
+    (opendatasoft-explore-sdk / ods-explore-sdk both 404). Listed for
+    completeness; not installable from a registry.
+not_found:
+- registry: pypi
+  queries: [opendatasoft, opendatasoft-explore-api, ods-explore-api, opendatasoft-explore-sdk, opendatasoft-client]
+- registry: maven-central
+- registry: nuget
+- registry: pkg.go.dev
+- registry: rubygems
+- registry: packagist
+- registry: crates.io
+- scope: Electricity North West / SP ENW authored client of any kind, in any registry
+first_party_code:
+- name: SP Electricity North West Open Data — Future Energy Scenarios visualisation
+  url: https://github.com/spenw-open-data/spenw-open-data.github.io
+  site: https://spenw-open-data.github.io/
+  license: CC BY 4.0 (data/maps)
+  note: >-
+    The one genuinely first-party public code repository found for this provider.
+    Not a client library — a GitHub Pages DFES 2025 scenario visualisation that
+    ships the DFES data itself as static CSV and GeoJSON alongside the JS app.

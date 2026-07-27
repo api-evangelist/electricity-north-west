@@ -1,0 +1,136 @@
+generated: '2026-07-27'
+method: derived
+status: candidate
+source: >-
+  Tools derived one-per-operationId from
+  openapi/electricity-north-west-explore-api-v2-1-openapi.json. Searched first for
+  a published server: no MCP endpoint is advertised on the portal or in the vendor
+  documentation, /.well-known/oauth-protected-resource and
+  /.well-known/oauth-authorization-server both return 404, and no
+  first-party package exists in the npm @modelcontextprotocol scope or the MCP
+  registries.
+description: >-
+  Neither Electricity North West nor Opendatasoft (Huwise) publishes an MCP server
+  for this API. The tool list below is a CANDIDATE derived mechanically from the
+  16 Explore v2.1 operations — it is a design, not a deployment. It is worth
+  recording because this API is unusually well suited to MCP: read-only, fully
+  CORS-open, uniformly parameterised through ODSQL, and every operation is safe to
+  retry. Third-party generic Opendatasoft MCP servers do exist on npm and would
+  work against this domain; they are listed under third_party but are not
+  endorsed and are not first-party.
+server:
+  name: electricity-north-west
+  transport: null
+  url: null
+  published: false
+tools:
+- name: list_datasets
+  description: Search the SP Electricity North West catalogue of 146 open datasets with ODSQL.
+  source_operation: openapi/electricity-north-west-explore-api-v2-1-openapi.json#getDatasets
+  http: GET /catalog/datasets
+  auth_required: false
+- name: get_dataset
+  description: Get one dataset's metadata, licence and field schema by dataset_id.
+  source_operation: openapi/electricity-north-west-explore-api-v2-1-openapi.json#getDataset
+  http: GET /catalog/datasets/{dataset_id}
+  auth_required: false
+- name: list_catalog_facets
+  description: Enumerate catalogue facet values and counts (licence, theme, keyword).
+  source_operation: openapi/electricity-north-west-explore-api-v2-1-openapi.json#getDatasetsFacets
+  http: GET /catalog/facets
+  auth_required: false
+- name: list_catalog_export_formats
+  description: List the serialisations the catalogue can be exported in.
+  source_operation: openapi/electricity-north-west-explore-api-v2-1-openapi.json#listExportFormats
+  http: GET /catalog/exports
+  auth_required: false
+- name: export_catalog
+  description: Export the whole catalogue in a chosen format.
+  source_operation: openapi/electricity-north-west-explore-api-v2-1-openapi.json#exportDatasets
+  http: GET /catalog/exports/{format}
+  auth_required: false
+- name: export_catalog_csv
+  description: Export the catalogue as CSV.
+  source_operation: openapi/electricity-north-west-explore-api-v2-1-openapi.json#exportCatalogCSV
+  http: GET /catalog/exports/csv
+  auth_required: false
+- name: export_catalog_dcat
+  description: Export the catalogue as DCAT-AP RDF.
+  source_operation: openapi/electricity-north-west-explore-api-v2-1-openapi.json#exportCatalogDCAT
+  http: GET /catalog/exports/dcat{dcat_ap_format}
+  auth_required: false
+- name: query_records
+  description: Query records in a dataset with ODSQL select/where/group_by/order_by.
+  source_operation: openapi/electricity-north-west-explore-api-v2-1-openapi.json#getRecords
+  http: GET /catalog/datasets/{dataset_id}/records
+  auth_required: true
+- name: get_record
+  description: Fetch a single record by its identifier.
+  source_operation: openapi/electricity-north-west-explore-api-v2-1-openapi.json#getRecord
+  http: GET /catalog/datasets/{dataset_id}/records/{record_id}
+  auth_required: true
+- name: list_dataset_facets
+  description: Enumerate facet values within one dataset.
+  source_operation: openapi/electricity-north-west-explore-api-v2-1-openapi.json#getRecordsFacets
+  http: GET /catalog/datasets/{dataset_id}/facets
+  auth_required: true
+- name: list_dataset_attachments
+  description: List files attached to a dataset.
+  source_operation: openapi/electricity-north-west-explore-api-v2-1-openapi.json#getDatasetAttachments
+  http: GET /catalog/datasets/{dataset_id}/attachments
+  auth_required: false
+- name: list_dataset_export_formats
+  description: List the export serialisations available for one dataset.
+  source_operation: openapi/electricity-north-west-explore-api-v2-1-openapi.json#listDatasetExportFormats
+  http: GET /catalog/datasets/{dataset_id}/exports
+  auth_required: false
+- name: export_records
+  description: Bulk-export a dataset's records in a chosen format, with no record-count cap.
+  source_operation: openapi/electricity-north-west-explore-api-v2-1-openapi.json#exportRecords
+  http: GET /catalog/datasets/{dataset_id}/exports/{format}
+  auth_required: true
+- name: export_records_csv
+  description: Bulk-export a dataset as CSV.
+  source_operation: openapi/electricity-north-west-explore-api-v2-1-openapi.json#exportRecordsCSV
+  http: GET /catalog/datasets/{dataset_id}/exports/csv
+  auth_required: true
+- name: export_records_parquet
+  description: Bulk-export a dataset as Apache Parquet.
+  source_operation: openapi/electricity-north-west-explore-api-v2-1-openapi.json#exportRecordsParquet
+  http: GET /catalog/datasets/{dataset_id}/exports/parquet
+  auth_required: true
+- name: export_records_gpx
+  description: Bulk-export a geo dataset as GPX.
+  source_operation: openapi/electricity-north-west-explore-api-v2-1-openapi.json#exportRecordsGPX
+  http: GET /catalog/datasets/{dataset_id}/exports/gpx
+  auth_required: true
+agent_notes:
+- >-
+  All 16 tools are read-only. There is no write, no state and no consequence
+  beyond quota consumption — the safest possible tool surface.
+- >-
+  Tool inputs should be inherited verbatim from each operation's OpenAPI
+  parameters (the ODSQL clause set: select, where, group_by, order_by, refine,
+  exclude, limit, offset, lang, timezone). See mcp/electricity-north-west-tool-crosswalk.yml.
+- >-
+  An agent MUST call get_dataset before query_records: ODSQL field names are
+  dataset-specific and an unknown field returns 400 ODSQLError.
+- >-
+  Anonymous callers can reach metadata only. query_records and the dataset export
+  tools return error_code "ForbiddenAccess" without an API key.
+- >-
+  Budget against a shared 5000 calls/day domain quota. Prefer export_records over
+  paginating query_records.
+third_party:
+- package: '@pipeworx/mcp-opendatasoft'
+  registry: npm
+  url: https://www.npmjs.com/package/@pipeworx/mcp-opendatasoft
+  description: >-
+    "Generic Opendatasoft portal client (3000+ public OpenDataSoft instances)" —
+    would work against electricitynorthwest.opendatasoft.com.
+  official: false
+  endorsed: false
+- note: >-
+    The same publisher ships ~20 domain-pinned Opendatasoft MCP servers
+    (@pipeworx/mcp-data-paris, -odre, -sncf, …). None targets Electricity North
+    West.

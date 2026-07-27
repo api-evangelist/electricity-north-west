@@ -1,0 +1,197 @@
+generated: '2026-07-27'
+method: derived
+source: >-
+  Derived from components.schemas and the path hierarchy of
+  openapi/electricity-north-west-explore-api-v2-1-openapi.json (identical shape in
+  the v2.0 document), plus live responses captured from
+  https://electricitynorthwest.opendatasoft.com/api/explore/v2.1/ on 2026-07-27.
+description: >-
+  The Explore API has a deliberately small and strictly hierarchical entity graph:
+  one Catalog contains many Datasets, each Dataset declares its own Fields and
+  contains many Records, and Facets, Attachments and Exports hang off either the
+  Catalog or a Dataset. The vendor states the design intent explicitly —
+  "endpoints are organized in a hierarchical way describing the relative
+  relationship between objects" — and every response carries a `links` array that
+  makes the graph traversable at runtime. There is no cross-entity foreign key:
+  the only reference is containment by dataset_id and record _id.
+root: Catalog
+entities:
+- name: Catalog
+  schema: null
+  path: /catalog
+  identifier: implicit (one catalog per domain)
+  description: >-
+    The domain-level collection of published datasets. On this domain it holds
+    146 datasets (total_count, live 2026-07-27).
+  operations: [getDatasets, getDataset, getDatasetsFacets, listExportFormats, exportDatasets, exportCatalogCSV, exportCatalogDCAT]
+- name: Dataset
+  schema: dataset
+  path: /catalog/datasets/{dataset_id}
+  identifier: dataset_id
+  alternate_identifier: dataset_uid
+  id_format: >-
+    Human-readable slug. On this domain most carry an "sp-enw-" prefix following
+    the 2025 rebrand (e.g. sp-enw-gis-conductors-trafford), with older
+    unprefixed ids still present (e.g. enwl_control_boundary, lv_load_duration).
+    dataset_uid is an opaque "da_xxxxxx" handle.
+  fields:
+    dataset_id: string slug
+    dataset_uid: opaque platform id
+    has_records: boolean
+    data_visible: boolean — whether record data is readable by the caller
+    features: array — e.g. [analyze, geo, timeserie, custom_view]
+    attachments: array of Attachment
+    alternative_exports: array
+    metas: nested object of metadata namespaces (see Metas)
+    fields: array of Field descriptors
+    _links: array of links
+  operations: [getDataset, getRecords, getRecord, getRecordsFacets, getDatasetAttachments, listDatasetExportFormats, exportRecords, exportRecordsCSV, exportRecordsParquet, exportRecordsGPX]
+- name: Field
+  schema: inline within dataset.fields
+  path: /catalog/datasets/{dataset_id} (fields array)
+  identifier: name
+  fields:
+    name: machine field name used in ODSQL select/where/group_by
+    label: display label
+    type: text | int | double | date | datetime | geo_point_2d | geo_shape | file
+    description: string or null
+    annotations: object
+  description: >-
+    The per-dataset schema. This is what makes ODSQL dataset-specific: a select or
+    where clause naming a field that is not in this array returns 400 ODSQLError.
+    There is no global field vocabulary.
+- name: Metas
+  schema: inline within dataset.metas
+  path: /catalog/datasets/{dataset_id} (metas object)
+  identifier: namespace key (e.g. "default")
+  fields:
+    title: e.g. "SP ENW - DFES - LV Headroom (Monitored)"
+    description: HTML string, frequently carrying the licence note and a dataportal@enwl.co.uk contact link
+    license: 'one of: CC BY 4.0 (96), SP ENW Shared Licence (41), Open Government Licence v3.0 (8)'
+    modified: last modification timestamp
+    theme: thematic classification
+    keyword: array of keywords
+  description: >-
+    Namespaced metadata. `default` is the DCAT-ish namespace; the same values are
+    what the DCAT-AP and Dublin Core catalogue exports serialise.
+- name: Record
+  schema: record
+  path: /catalog/datasets/{dataset_id}/records/{record_id}
+  identifier: _id
+  fields:
+    _id: record identifier
+    _timestamp: ingestion timestamp
+    _size: record size
+    _links: array of links
+    (dataset fields): the record payload is the dataset's own Field set, flattened
+  description: >-
+    A row in a dataset. The payload keys are entirely dataset-specific — there is
+    no shared record schema beyond the four underscore-prefixed platform fields.
+  access: >-
+    Gated on this domain: anonymous callers receive error_code "ForbiddenAccess".
+    Requires a free registered account and API key.
+- name: Facet
+  schema: facet_enumeration / facet_value_enumeration
+  path: /catalog/facets and /catalog/datasets/{dataset_id}/facets
+  identifier: name
+  fields:
+    name: facet name (e.g. license, theme, keyword)
+    facets: array of {name, count, value, state}
+  description: >-
+    Aggregated value counts, available at both catalogue and dataset level. The
+    catalogue-level license facet is how the 96/41/8 licence split was measured.
+- name: Attachment
+  schema: attachment
+  path: /catalog/datasets/{dataset_id}/attachments
+  identifier: href
+  fields:
+    href: download URL
+    metas: object
+  description: Files attached to a dataset (documentation, source spreadsheets, PDFs).
+- name: ExportFormat
+  schema: enum-format-datasets
+  path: /catalog/exports and /catalog/datasets/{dataset_id}/exports
+  identifier: rel
+  description: >-
+    Discoverable list of serialisations. Catalogue level, observed live: csv,
+    json, data.json, rdf, ttl, dublin_core, dcat, rss, sitemap, xlsx. Dataset
+    level adds parquet, gpx and (for geo datasets) geojson.
+- name: Link
+  schema: links
+  path: every response
+  fields:
+    rel: self | source | <format name>
+    href: absolute URL
+  description: >-
+    The hypermedia affordance present on every response. rel "source" walks up
+    the hierarchy (a facets response links back to /catalog), rel "self" is the
+    canonical URL, and format rels enumerate the exports.
+relationships:
+- from: Catalog
+  to: Dataset
+  type: has_many
+  via: dataset_id
+  cardinality: 1..146 on this domain
+  evidence: GET /catalog/datasets returns {total_count, results[dataset]}
+- from: Dataset
+  to: Catalog
+  type: belongs_to
+  via: _links rel=source
+- from: Dataset
+  to: Field
+  type: has_many
+  via: fields[]
+  evidence: dataset.fields array in the dataset schema
+- from: Dataset
+  to: Metas
+  type: has_one
+  via: metas
+- from: Dataset
+  to: Record
+  type: has_many
+  via: dataset_id path segment
+  evidence: GET /catalog/datasets/{dataset_id}/records returns {total_count, results[record]}
+- from: Record
+  to: Dataset
+  type: belongs_to
+  via: dataset_id path segment
+- from: Dataset
+  to: Attachment
+  type: has_many
+  via: attachments[]
+- from: Dataset
+  to: Facet
+  type: has_many
+  via: /catalog/datasets/{dataset_id}/facets
+- from: Catalog
+  to: Facet
+  type: has_many
+  via: /catalog/facets
+- from: Catalog
+  to: ExportFormat
+  type: has_many
+  via: /catalog/exports
+- from: Dataset
+  to: ExportFormat
+  type: has_many
+  via: /catalog/datasets/{dataset_id}/exports
+- from: '*'
+  to: Link
+  type: has_many
+  via: _links / links
+notes:
+- >-
+  No entity in this model has a foreign key to another entity. Containment is
+  expressed only through the URL hierarchy and the `links` array, which is why
+  the API is trivially safe to traverse and why there is no join surface.
+- >-
+  The real domain model — substations, feeders, GSPs, BSPs, embedded generation,
+  DFES scenarios — lives INSIDE the per-dataset Field sets, not in the API's own
+  schema. Field names such as gsp, bsp, mpan, postcode, conflict_type and
+  risk_level appear in the primacy-risk-of-conflict-report dataset. There is no
+  cross-dataset vocabulary tying those together; each of the 146 datasets defines
+  its own columns.
+- >-
+  Consequence for agents: you cannot plan a query against this API from the
+  OpenAPI alone. You must first read GET /catalog/datasets/{dataset_id} and use
+  its `fields` array to construct ODSQL. See skills/.

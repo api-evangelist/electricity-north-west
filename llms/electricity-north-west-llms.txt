@@ -1,0 +1,122 @@
+# Electricity North West (SP Electricity North West)
+
+> The regulated electricity distribution network operator for the North West of
+> England — ~13,000 km of overhead line and 44,000+ km of underground cable from
+> Cumbria to Manchester — renamed SP Electricity North West in August 2025 after
+> Iberdrola acquired it. It publishes one real, machine-readable API: an
+> Opendatasoft (Huwise) Explore REST API v2.1 (and legacy v2.0) over an open data
+> portal of 146 datasets, with a genuine OpenAPI 3.0.3 contract, a DCAT-AP
+> catalogue export and a hosted API console. There is NO consumer energy usage or
+> billing API, and no UK mandate requires one.
+
+Generated 2026-07-27 by the API Evangelist enrichment pipeline. No /llms.txt is
+published on the portal or the vendor docs host (both return 404), so this file
+was generated from apis.yml and the artifacts in this repository.
+
+## What this API is, and is not
+
+- IS: a market/network **open data** API. Embedded capacity register, DFES
+  scenarios, LV headroom and peak demand, network capacity heatmaps, GSP
+  connection queue, GIS conductor and substation layers, biodiversity and
+  flexibility datasets.
+- IS NOT: a consumer data API. No usage, no billing, no meter-level customer data.
+  The UK has no consumer energy data-portability right equivalent to Australia's
+  CDR; Great Britain's smart-meter programme produced infrastructure (the licensed
+  Smart DCC), not a data right; Green Button has no UK footprint.
+- The obligation that binds this organization is **Ofgem's Data Best Practice
+  Guidance** under the RIIO-ED2 digitalisation licence condition — an open-data
+  duty. This portal is a verified live implementation of it.
+- The API contract is the platform vendor's (Opendatasoft, rebranding to Huwise),
+  not the network operator's. Documentation, status page, SDKs and security
+  disclosure all live on vendor domains.
+
+## APIs
+
+- [SP Electricity North West Open Data Explore API v2.1](https://electricitynorthwest.opendatasoft.com/api): current version. 16 read-only paths. Base URL `https://electricitynorthwest.opendatasoft.com/api/explore/v2.1`
+- [SP Electricity North West Open Data Explore API v2.0](https://electricitynorthwest.opendatasoft.com/api): superseded but still served. Base URL `https://electricitynorthwest.opendatasoft.com/api/explore/v2.0`
+
+## Specs
+
+- [OpenAPI 3.0.3 — Explore API v2.1](openapi/electricity-north-west-explore-api-v2-1-openapi.json): harvested verbatim from `https://electricitynorthwest.opendatasoft.com/api/explore/v2.1/swagger.json`
+- [OpenAPI 3.0.3 — Explore API v2.0](openapi/electricity-north-west-explore-api-v2-0-openapi.json): harvested verbatim from `https://electricitynorthwest.opendatasoft.com/api/v2/swagger.json`
+- [Overlay — v2.1 enhancements](overlays/electricity-north-west-explore-api-v2-1-overlay.yaml)
+- [Overlay — v2.0 enhancements](overlays/electricity-north-west-explore-api-v2-0-overlay.yaml)
+
+## Operations
+
+All 16 operations are `GET`. Catalogue: `getDatasets`, `getDataset`,
+`getDatasetsFacets`, `listExportFormats`, `exportDatasets`, `exportCatalogCSV`,
+`exportCatalogDCAT`. Dataset: `getRecords`, `getRecord`, `getRecordsFacets`,
+`getDatasetAttachments`, `listDatasetExportFormats`, `exportRecords`,
+`exportRecordsCSV`, `exportRecordsParquet`, `exportRecordsGPX`.
+
+## How to use it correctly
+
+- **Auth**: `Authorization: Apikey <API_KEY>` (recommended) or `?apikey=<KEY>`.
+  Free self-serve account. An OAuth2 authorization-code flow exists with a single
+  scope, `all`.
+- **Access split**: catalogue and dataset **metadata are anonymous**; **record
+  data is gated** — anonymous record calls return `error_code: ForbiddenAccess`
+  even for CC BY 4.0 datasets.
+- **Read the schema first**: ODSQL field names are dataset-specific. Call
+  `getDataset` and use its `fields[]` array before writing any `select`/`where`/
+  `group_by`, or you get `400 ODSQLError`.
+- **Paging ceiling**: `limit` ≤ 100 without `group_by`; `offset + limit` < 10000.
+  Past that, use the export endpoints — they have no record-count limitation.
+- **Rate limit**: 5000 calls/day for the whole domain (observed anonymously
+  2026-07-27), signalled on `X-RateLimit-Limit` / `-Remaining` / `-Reset`, reset at
+  midnight UTC. Authenticated users get an unpublished higher ceiling.
+- **Retries**: every operation is safe and idempotent (GET-only surface). There is
+  no `Idempotency-Key` header because there are no unsafe methods.
+- **Errors are not RFC 9457**: `{error_code, message}` for general errors,
+  `{errorcode, reset_time, limit_time_unit, call_limit, error}` for 429.
+- **Deprecation**: warned per-feature on the `ODS-Explore-API-Deprecation` header,
+  with a `Link` header to the changelog. No RFC 8594 `Sunset`.
+
+## Licensing of the data
+
+Measured live from `GET /catalog/facets?facet=license` on 2026-07-27:
+CC BY 4.0 = 96 datasets, **SP ENW Shared Licence = 41** (a bespoke licence, not an
+open one), Open Government Licence v3.0 = 8. Check `metas.default.license` on any
+dataset before redistributing.
+
+## Docs
+
+- [API landing page / developer portal](https://electricitynorthwest.opendatasoft.com/api)
+- [Explore API v2 reference (vendor)](https://help.opendatasoft.com/apis/ods-explore-v2/)
+- [Hosted API console](https://electricitynorthwest.opendatasoft.com/api-console/explore/v2.1/)
+- [Data catalogue](https://electricitynorthwest.opendatasoft.com/explore)
+- [DCAT-AP catalogue export](https://electricitynorthwest.opendatasoft.com/api/explore/v2.1/catalog/exports/dcat)
+- [Register / log in](https://electricitynorthwest.opendatasoft.com/pages/registration_log_in/)
+- [Platform status page (vendor)](https://status.huwise.com/)
+- [Corporate site](https://www.enwl.co.uk/) — behind a Cloudflare managed challenge; returns HTTP 403 to every non-browser client
+- [News / blog](https://news.enwl.co.uk/)
+- [SP ENW Open Data on GitHub](https://github.com/spenw-open-data)
+- [DFES 2025 scenario visualisation](https://spenw-open-data.github.io/)
+
+## Artifacts in this repository
+
+- [apis.yml](apis.yml) — APIs.json index for this provider
+- [Agent skills](skills/_index.yml) — three packaged skills covering all 16 operations
+- [MCP candidate server](mcp/electricity-north-west-mcp.yml) and [tool crosswalk](mcp/electricity-north-west-tool-crosswalk.yml)
+- [API conventions](conventions/electricity-north-west-conventions.yml)
+- [Authentication](authentication/electricity-north-west-authentication.yml) and [OAuth scopes](scopes/electricity-north-west-scopes.yml)
+- [Error catalog](errors/electricity-north-west-problem-types.yml)
+- [Rate limits](rate-limits/electricity-north-west-rate-limits.yml)
+- [Lifecycle](lifecycle/electricity-north-west-lifecycle.yml) and [changelog](changelog/electricity-north-west-changelog.yml)
+- [Data model](data-model/electricity-north-west-data-model.yml)
+- [Conformance](conformance/electricity-north-west-conformance.yml)
+- [Sandbox / console](sandbox/electricity-north-west-sandbox.yml)
+- [Packages](packages/electricity-north-west-packages.yml) and [components](components/electricity-north-west-components.yml)
+- [Well-known](well-known/electricity-north-west-well-known.yml) and [security.txt](well-known/electricity-north-west-security.txt)
+- [Domain security](security/electricity-north-west-domain-security.yml) and [vulnerability disclosure](security/electricity-north-west-vulnerability-disclosure.yml)
+- [Worked examples](examples/_index.yml) — real captured responses, including both error shapes
+- [Review](review.yml) — the mandate assessment behind all of the above
+
+## What does not exist
+
+No GraphQL (`/api/graphql` → 404). No webhooks, no event stream, no AsyncAPI. No
+gRPC/protobuf. No first-party MCP server. No first-party CLI. No first-party SDK
+from Electricity North West itself. No OpenID Connect, no RFC 8414/9728 discovery
+documents, no `/.well-known/api-catalog`. No SLA or uptime target. No dated
+changelog. No published certifications.

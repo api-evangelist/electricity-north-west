@@ -1,0 +1,151 @@
+overlay: 1.0.0
+info:
+  title: API Evangelist enhancements for SP Electricity North West Explore API v2.1
+  version: 1.0.0
+extends: openapi/electricity-north-west-explore-api-v2-1-openapi.json
+x-generated: '2026-07-27'
+x-method: generated
+x-source: >-
+  Enhancements derived from live probes of
+  https://electricitynorthwest.opendatasoft.com/api/explore/v2.1 on 2026-07-27 and
+  from the vendor reference at https://help.opendatasoft.com/apis/ods-explore-v2/.
+  The harvested OpenAPI is never mutated; everything we learned that the spec does
+  not say is expressed here as overlay actions.
+actions:
+- target: $.info
+  update:
+    x-apievangelist-provider: Electricity North West
+    x-apievangelist-provider-id: electricity-north-west
+    x-apievangelist-legal-name: SP Electricity North West
+    x-apievangelist-sector: Energy — electricity distribution network operator (DNO)
+    x-apievangelist-country: United Kingdom
+    x-apievangelist-regulator: Ofgem
+    x-apievangelist-mandate: >-
+      Ofgem Data Best Practice Guidance under the RIIO-ED2 digitalisation licence
+      condition — an open-data duty, not a consumer data right. This API is a
+      verified live implementation of it.
+    x-apievangelist-platform: Opendatasoft (rebranding to Huwise) — hosted tenant
+    x-apievangelist-datasets: 146
+    x-apievangelist-licence-split:
+      CC BY 4.0: 96
+      SP ENW Shared Licence: 41
+      Open Government Licence v3.0: 8
+    x-apievangelist-artifacts:
+      authentication: authentication/electricity-north-west-authentication.yml
+      conventions: conventions/electricity-north-west-conventions.yml
+      errors: errors/electricity-north-west-problem-types.yml
+      lifecycle: lifecycle/electricity-north-west-lifecycle.yml
+      rate_limits: rate-limits/electricity-north-west-rate-limits.yml
+      data_model: data-model/electricity-north-west-data-model.yml
+      scopes: scopes/electricity-north-west-scopes.yml
+      sandbox: sandbox/electricity-north-west-sandbox.yml
+      skills: skills/_index.yml
+- target: $.info
+  description: >-
+    Record the alternative authentication forms the vendor documents but the spec
+    omits, and the partial-anonymous access model observed live.
+  update:
+    x-apievangelist-auth-header: 'Authorization: Apikey <API_KEY>'
+    x-apievangelist-auth-note: >-
+      The spec declares only the `apikey` query parameter. The vendor recommends
+      the Authorization header form instead, and also supports a portal session
+      cookie and an OAuth2 authorization-code flow (single scope `all`) at
+      /oauth2/authorize/ and /oauth2/token/ on this domain.
+    x-apievangelist-anonymous-access: >-
+      Catalogue and dataset metadata are readable with no credential. Record and
+      dataset-export operations return error_code "ForbiddenAccess" anonymously
+      and require a free registered account.
+- target: $.info
+  description: Rate-limit and deprecation signalling observed in live response headers.
+  update:
+    x-apievangelist-rate-limit:
+      scope: domain
+      limit: 5000
+      unit: day
+      reset: midnight UTC
+      observed: '2026-07-27'
+      headers: [X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset, X-RateLimit-dataset-Limit, X-RateLimit-dataset-Remaining, X-RateLimit-dataset-Reset]
+    x-apievangelist-deprecation-header: ODS-Explore-API-Deprecation
+    x-apievangelist-deprecation-note: >-
+      Feature-level deprecation warnings, formatted `<FEATURE_ID>: message` and
+      separated by ';', with a companion Link header carrying the changelog URL.
+      No RFC 8594 Sunset header.
+- target: $.info
+  description: Record the error contract, which is not RFC 9457.
+  update:
+    x-apievangelist-error-format: bespoke-json
+    x-apievangelist-error-envelopes:
+    - applies_to: 4xx except 429
+      shape: '{error_code: string, message: string}'
+      codes_seen: [ODSQLError, ForbiddenAccess]
+    - applies_to: 429
+      shape: '{errorcode: number, reset_time: string, limit_time_unit: string, call_limit: number, error: string}'
+      codes_seen: ['10002']
+    x-apievangelist-undeclared-response: >-
+      The records and dataset-export operations return an error_code
+      "ForbiddenAccess" body that is declared in neither this document nor the
+      v2.0 document.
+- target: $.info
+  description: Idempotency and agent-safety posture.
+  update:
+    x-apievangelist-idempotency:
+      supported: true
+      mechanism: inherent — GET-only surface
+      idempotency_key_header: null
+      note: >-
+        "Only the HTTP GET method is supported." Every operation is safe and
+        idempotent under RFC 9110 §9.2 and can be retried without side effects.
+        Retries consume the daily quota.
+    x-agentic-access-summary:
+      action_class: connected
+      consequence: read
+      operations_all_read_only: true
+- target: $.servers
+  description: Annotate the single production server.
+  update:
+    x-apievangelist-environment: production
+    x-apievangelist-sandbox: >-
+      No separate sandbox. The hosted API console at
+      /api-console/explore/v2.1/ and the vendor's fully public demo domain
+      documentation-resources.opendatasoft.com (dataset `gold-prices`) are the
+      try-it surfaces.
+- target: $.paths['/catalog/datasets']
+  description: The catalogue entry point — the operation to start from.
+  update:
+    x-apievangelist-entry-point: true
+    x-apievangelist-total-count-observed: 146
+    x-apievangelist-anonymous: true
+- target: $.paths['/catalog/datasets/{dataset_id}']
+  description: >-
+    Flag the prerequisite relationship an agent must respect: ODSQL field names
+    are dataset-specific and only discoverable here.
+  update:
+    x-apievangelist-anonymous: true
+    x-apievangelist-prerequisite-for: [getRecords, getRecord, getRecordsFacets, exportRecords]
+    x-apievangelist-note: >-
+      The `fields` array in the response is the only source of valid ODSQL field
+      names for that dataset. Querying an unlisted field returns 400 ODSQLError.
+- target: $.paths['/catalog/datasets/{dataset_id}/records']
+  description: Record the registration wall observed on this domain.
+  update:
+    x-apievangelist-anonymous: false
+    x-apievangelist-gated-by: free registered account + API key
+    x-apievangelist-observed: >-
+      Returned error_code "ForbiddenAccess" anonymously for all five datasets
+      probed on 2026-07-27.
+    x-apievangelist-page-limit: 100 without group_by; offset + limit must stay under 10000
+- target: $.paths['/catalog/datasets/{dataset_id}/exports/{format}']
+  description: Bulk retrieval guidance.
+  update:
+    x-apievangelist-anonymous: false
+    x-apievangelist-note: >-
+      No record-count limitation. Prefer this over paginating the records endpoint
+      for bulk retrieval — it is cheaper against the shared 5000/day domain quota.
+- target: $.paths['/catalog/exports/dcat{dcat_ap_format}']
+  description: The catalogue's standards-based discovery document.
+  update:
+    x-apievangelist-anonymous: true
+    x-apievangelist-standard: DCAT-AP
+    x-apievangelist-verified: >-
+      GET /api/explore/v2.1/catalog/exports/dcat returned 200,
+      application/rdf+xml, 4,920,757 bytes on 2026-07-27.

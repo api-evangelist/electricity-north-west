@@ -1,0 +1,82 @@
+generated: '2026-07-27'
+method: searched
+source: >-
+  https://electricitynorthwest.opendatasoft.com/api-console/explore/v2.1/ (probed
+  200 on 2026-07-27), the "Getting Started" section of
+  https://help.opendatasoft.com/apis/ods-explore-v2/, and live anonymous calls
+  against the production API.
+description: >-
+  There is no separate sandbox environment, no test/live key split and no fixture
+  data — this is a read-only open data API, so the production catalogue IS the
+  test surface. What the provider does publish is a hosted, in-portal API console
+  for building and executing live requests, and enough anonymous access that a
+  developer can exercise the catalogue endpoints before creating an account. The
+  vendor additionally runs a fully public demonstration domain used throughout the
+  documentation, which is genuinely usable as a no-account playground for the same
+  API contract.
+test_live_separation:
+  exists: false
+  note: >-
+    One environment. No test-mode key prefix, no test-mode flag, no separate host.
+    Because every operation is a GET, exercising production has no side effects
+    beyond consuming the daily call quota.
+console:
+  url: https://electricitynorthwest.opendatasoft.com/api-console/explore/v2.1/
+  kind: hosted interactive API console
+  status: 200
+  auth: >-
+    Uses the portal session cookie when logged in; runs anonymously otherwise
+    (metadata endpoints only).
+  versions:
+  - https://electricitynorthwest.opendatasoft.com/api-console/explore/v2.1/
+  note: >-
+    This is the `console_or_sandbox` surface for this provider — a real
+    try-it-now client wired to the live domain, linked from the portal's /api page.
+anonymous_playground:
+  works_without_credentials: true
+  endpoints:
+  - GET /api/explore/v2.1/catalog/datasets
+  - GET /api/explore/v2.1/catalog/datasets/{dataset_id}
+  - GET /api/explore/v2.1/catalog/facets?facet=license
+  - GET /api/explore/v2.1/catalog/exports
+  - GET /api/explore/v2.1/catalog/exports/dcat
+  gated:
+  - GET /api/explore/v2.1/catalog/datasets/{dataset_id}/records
+  - GET /api/explore/v2.1/catalog/datasets/{dataset_id}/exports/{format}
+  note: >-
+    Record data returns error_code "ForbiddenAccess" without a credential. To go
+    past metadata you need a free account and an API key.
+  worked_examples: examples/
+vendor_demo_domain:
+  domain: https://documentation-resources.opendatasoft.com
+  documented_as: https://documentation-resources.huwise.com
+  purpose: >-
+    The domain the vendor's Getting Started walkthrough uses. Explicitly described
+    as "a portal providing public access to data. So, you don't need an account or
+    an API key." Same Explore v2.1 contract, different tenant.
+  sample_dataset: gold-prices
+  verified: >-
+    GET https://documentation-resources.opendatasoft.com/api/explore/v2.1/catalog/datasets/gold-prices/records?limit=2
+    returned HTTP 200 anonymously on 2026-07-27 with
+    {"total_count": 384, "results": [{"date": "1988-02", "price": 442.124}, ...]}.
+    The huwise.com alias returns the same.
+  note: >-
+    Use this to learn the ODSQL parameter surface and the response shapes without
+    spending SP Electricity North West quota, then repoint at the
+    electricitynorthwest domain.
+credentials:
+  registration: https://electricitynorthwest.opendatasoft.com/pages/registration_log_in/
+  key_management: https://electricitynorthwest.opendatasoft.com/account/
+  cost: free
+  test_values_published: false
+  note: >-
+    No magic test identifiers, no fixture datasets, no seeded records. Nothing in
+    this artifact is invented — where the provider publishes no test values, none
+    are recorded.
+quota_awareness:
+  limit: 5000 calls/day for the whole domain, anonymous
+  advice: >-
+    A shared per-domain quota means your experimentation competes with every other
+    consumer of this portal. Read X-RateLimit-Remaining before running loops, and
+    prefer the exports endpoints over paginating records.
+  detail: rate-limits/electricity-north-west-rate-limits.yml

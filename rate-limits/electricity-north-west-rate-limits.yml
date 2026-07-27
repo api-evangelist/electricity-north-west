@@ -1,0 +1,98 @@
+specification: API Commons Rate Limits
+specificationVersion: '0.1'
+provider: Electricity North West
+providerId: electricity-north-west
+generated: '2026-07-27'
+method: searched
+created: '2026-07-27'
+modified: '2026-07-27'
+tags:
+- Rate Limiting
+- Open Data
+- Energy
+description: >-
+  Rate limiting on the SP Electricity North West Explore API is enforced by the
+  Opendatasoft (Huwise) platform as a per-domain daily call quota, and the limit
+  is advertised on every response through X-RateLimit-* headers. The values below
+  were read live from the response headers of an anonymous
+  GET /api/explore/v2.1/catalog/datasets call on 2026-07-27, plus the documented
+  429 quota envelope in the OpenAPI and the vendor API reference. Authenticated
+  users are documented as receiving "extended quotas"; the authenticated ceiling
+  is not published.
+sources:
+- https://electricitynorthwest.opendatasoft.com/api/explore/v2.1/catalog/datasets
+- https://help.opendatasoft.com/apis/ods-explore-v2/
+- openapi/electricity-north-west-explore-api-v2-1-openapi.json
+headers:
+  limit: X-RateLimit-Limit
+  remaining: X-RateLimit-Remaining
+  reset: X-RateLimit-Reset
+  dataset_limit: X-RateLimit-dataset-Limit
+  dataset_remaining: X-RateLimit-dataset-Remaining
+  dataset_reset: X-RateLimit-dataset-Reset
+  deprecation: ODS-Explore-API-Deprecation
+  note: >-
+    All six rate-limit headers are named in the Access-Control-Expose-Headers
+    response header, so they are readable from browser clients cross-origin.
+    X-RateLimit-Reset is an absolute UTC timestamp (e.g. "2026-07-28 00:00:00+00:00"),
+    i.e. the quota resets at midnight UTC.
+responseCodes:
+  throttled: 429
+limits:
+- name: Anonymous API calls (whole domain)
+  scope: domain
+  metric: requests_per_day
+  limit: 5000
+  timeFrame: day
+  observed: '2026-07-27'
+  evidence: >-
+    x-ratelimit-limit: 5000 / x-ratelimit-remaining: 4967 /
+    x-ratelimit-reset: 2026-07-28 00:00:00+00:00 on an anonymous
+    GET /api/explore/v2.1/catalog/datasets?limit=1
+- name: Per-dataset call quota
+  scope: dataset
+  metric: requests_per_day
+  limit: null
+  timeFrame: day
+  note: >-
+    A separate per-dataset budget is signalled via X-RateLimit-dataset-Limit /
+    -Remaining / -Reset. No numeric value is published; read it from the headers
+    of a dataset-scoped call.
+- name: Authenticated API calls
+  scope: user
+  metric: requests_per_day
+  limit: null
+  timeFrame: day
+  note: >-
+    "An authenticated user can be granted access to restricted datasets and
+    benefit from extended quotas for API calls." — vendor API reference. The
+    extended ceiling is not published; it is set by the domain administrator.
+result_limits:
+- name: records endpoint page size
+  limit: 100
+  note: >-
+    Maximum `limit` per call is 100 without a group_by clause, and
+    offset + limit must stay under 10000. With a group_by the ceiling differs.
+    The exports endpoints are explicitly not subject to the record cap.
+- name: exports endpoint
+  limit: null
+  note: No record-count limitation; use exports for bulk retrieval.
+throttled_response:
+  status: 429
+  media_type: application/json; charset=utf-8
+  envelope:
+    errorcode: integer — 10002 for domain quota exhaustion
+    reset_time: ISO 8601 timestamp when the quota resets
+    limit_time_unit: string — "day"
+    call_limit: integer — the ceiling that was hit
+    error: human-readable message
+  documented_example:
+    errorcode: 10002
+    reset_time: '2021-01-26T00:00:00Z'
+    limit_time_unit: day
+    call_limit: 10000
+    error: Too many requests on the domain. Please contact the domain administrator.
+  note: >-
+    The example above is the vendor's documented sample (call_limit 10000); the
+    limit actually enforced on the electricitynorthwest domain is 5000/day as
+    observed in the live headers.

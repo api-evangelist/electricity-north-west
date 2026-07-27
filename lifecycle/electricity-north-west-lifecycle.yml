@@ -1,0 +1,118 @@
+generated: '2026-07-27'
+method: searched
+source: >-
+  https://help.opendatasoft.com/apis/ods-explore-v2/#section/Versioning and
+  #section/Introduction/Status (the vendor Explore API v2 reference governing this
+  domain), https://status.huwise.com/ (probed 200 on 2026-07-27), and the two
+  harvested OpenAPI documents in openapi/.
+description: >-
+  Lifecycle for the SP Electricity North West Explore API is inherited wholesale
+  from the Opendatasoft (Huwise) platform: the network operator neither versions
+  nor deprecates this API. The platform runs an explicit, written versioning
+  contract with three named backward-compatibility guarantees, a machine-readable
+  per-feature deprecation header, and a public status page. What it does NOT have
+  is an RFC 8594 Sunset header, a dated changelog with release dates, or any
+  published SLA/uptime target for this deployment.
+versioning:
+  scheme: uri-path
+  current: v2.1
+  also_served: v2.0
+  mechanism: /api/explore/{version}/<resource> — a stable path segment, no version header
+  docs: https://help.opendatasoft.com/apis/ods-explore-v2/#section/Versioning
+  status_of_current: >-
+    "The v2.1 version is stable and production ready: no breaking change will be
+    introduced in the future, following our versioning policy."
+  guarantees:
+  - ODSQL is backward compatible — new syntax cannot replace existing syntax.
+  - Response bodies are stable — new keys can be added, existing keys cannot be renamed or deleted.
+  - URLs and endpoints are stable.
+  breaking_change_policy: >-
+    A breaking change is defined as a violation of any of the three guarantees
+    above, and ships as a NEW API version rather than as a change to the current
+    one. A version is defined as a stable URL plus exhaustive documentation, and
+    the release of a new version is communicated with migration support.
+  cadence: >-
+    "New features are added every month and bugs are fixed every week" — within
+    the compatibility guarantees.
+deprecation:
+  policy_url: https://help.opendatasoft.com/apis/ods-explore-v2/#section/Versioning/Deprecation-warnings
+  sunset_header: false
+  rfc8594: false
+  mechanism: header
+  headers:
+    ODS-Explore-API-Deprecation: >-
+      Carries one or more deprecation messages, separated by ';'. Each message is
+      formatted `<FEATURE_ID>: deprecation message`. Documented example:
+      "DATE_KEYS_AS_ISOFORMAT: Dates used in group keys are currently returned as
+      timestamps and will be returned as standard formatted date strings in the
+      next API version".
+    Link: Carries the URL of the version changelog.
+  cors_exposed: true
+  note: >-
+    This is a genuine machine-readable deprecation channel, but it is
+    FEATURE-level, not endpoint-level: it warns that a behaviour will change in
+    the next version, not that an operation will be removed on a date. The
+    previous version's responses carry the header pointing at the successor.
+  superseded_versions:
+  - version: v2.0
+    status: still served, superseded by v2.1
+    removed_operations:
+    - /api/explore/v2.0/<source>/datasets/<dataset_id>/aggregates
+    - /api/explore/v2.0/<source>/datasets/<dataset_id>/query
+    note: >-
+      Both were folded into the single records endpoint in v2.1. Neither appears
+      in the harvested v2.0 OpenAPI document, which describes the same 16 paths
+      as v2.1.
+  deprecated_features_named_in_v2_1:
+  - Grouping by geo fields — use the geo_cluster() grouping function instead.
+  - XLS export format — replaced by XLSX.
+  - >-
+    Geometry function names distance(), geometry(...INTERSECTS/DISJOINT/WITHIN) —
+    renamed to within_distance(), intersects(), disjoint(), within(); old names
+    still available.
+deprecated_operations: []
+deprecated_operations_note: >-
+  Neither OpenAPI document flags any operation with `deprecated: true`. All 16
+  operations in both v2.0 and v2.1 are current.
+status_page:
+  url: https://status.huwise.com/
+  scope: >-
+    Opendatasoft/Huwise platform-wide, not specific to the SP Electricity North
+    West tenant. Probed HTTP 200 on 2026-07-27.
+  note: >-
+    Electricity North West publishes no status page of its own for this API.
+    status.opendatasoft.com returns 404; the live page is on the huwise.com domain
+    following the vendor rebrand.
+sla:
+  url: null
+  uptime_target: null
+  note: >-
+    No uptime target or availability commitment is published for this open data
+    portal. It is a free, registration-gated public service delivered under
+    Ofgem's Data Best Practice open-data duty, not a commercial API with an SLA.
+changelog:
+  url: https://help.opendatasoft.com/apis/ods-explore-v2/#section/Introduction/v2.1-Changelog
+  dated: false
+  detail: changelog/electricity-north-west-changelog.yml
+support:
+  api_platform: support@opendatasoft.com (contact.email in both OpenAPI documents)
+  data_portal: dataportal@enwl.co.uk (contact address published in dataset descriptions)
+catalog_freshness:
+  sitemap: https://electricitynorthwest.opendatasoft.com/sitemap.xml
+  note: >-
+    The sitemap carries a <lastmod> per dataset landing page (values seen from
+    2026-03 through 2026-07), and /api/explore/v2.1/catalog/exports/rss publishes
+    the catalogue as an RSS feed. Together these are the only change-notification
+    surface — there are no webhooks and no event stream.
+corporate_context:
+  rebrand: >-
+    Iberdrola acquired Electricity North West and renamed it SP Electricity North
+    West on 2025-08-05. The portal already carries the new name and every dataset
+    has been re-titled with an "SP ENW -" prefix, so the rebrand has been carried
+    through to the API's data layer.
+  vendor_rebrand: >-
+    Opendatasoft is rebranding to Huwise. help.opendatasoft.com and
+    help.huwise.com both resolve to the same reference; www.opendatasoft.com
+    redirects to www.huwise.com. The API paths and the tenant domain
+    electricitynorthwest.opendatasoft.com are unchanged, but documentation and
+    status URLs are migrating.

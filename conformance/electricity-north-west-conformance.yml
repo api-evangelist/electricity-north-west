@@ -1,0 +1,180 @@
+generated: '2026-07-27'
+method: derived
+source: >-
+  Derived from openapi/electricity-north-west-explore-api-v2-1-openapi.json and
+  openapi/electricity-north-west-explore-api-v2-0-openapi.json, the live response
+  headers and bodies captured from the API on 2026-07-27, and searched against
+  https://help.opendatasoft.com/apis/ods-explore-v2/ and
+  https://www.huwise.com/en/security/ for explicit conformance claims.
+description: >-
+  Which cross-cutting and industry standards the SP Electricity North West Explore
+  API actually conforms to. The headline is that this is a strong catalogue-standards
+  implementation and a weak API-standards implementation: DCAT-AP, Dublin Core,
+  RDF/Turtle and an RSS catalogue feed are all served, but the API itself has no
+  RFC 9457 errors, no OpenID Connect, no discovery documents, and a bespoke error
+  envelope. Energy-sector data standards do not apply — this is an open-data duty
+  under Ofgem's Data Best Practice Guidance, not a consumer data right.
+standards:
+- id: openapi-3.0
+  conforms: true
+  evidence: >-
+    Both documents declare openapi 3.0.3 and parse cleanly — 16 paths each,
+    unique operationIds, tags on every operation, and 200/400/401/429/500
+    responses declared on all 16.
+- id: rest
+  conforms: true
+  evidence: >-
+    Resource-oriented, hierarchical paths; GET only; JSON responses; every
+    response carries a `links` array of {rel, href} navigation objects.
+- id: http-safe-idempotent-methods
+  conforms: true
+  evidence: >-
+    "Only the HTTP GET method is supported" (info.description). Every operation is
+    safe and idempotent per RFC 9110 §9.2.
+- id: oauth2
+  conforms: true
+  standard: RFC 6749
+  evidence: >-
+    Documented authorization-code flow with /oauth2/authorize/ and /oauth2/token/
+    on this domain; token endpoint returns 405 to GET as expected. NOT declared in
+    either OpenAPI document — docs-only.
+  caveat: Single scope `all`; no least-privilege model.
+- id: oauth2-bearer
+  conforms: true
+  standard: RFC 6750
+  evidence: Vendor documentation states the OAuth2 flow "uses Bearer Tokens in compliance with RFC 6750".
+- id: oidc
+  conforms: false
+  evidence: /.well-known/openid-configuration returns 404. No OpenID Connect surface.
+- id: rfc8414-oauth-authorization-server-metadata
+  conforms: false
+  evidence: /.well-known/oauth-authorization-server returns 404.
+- id: rfc9728-oauth-protected-resource-metadata
+  conforms: false
+  evidence: /.well-known/oauth-protected-resource returns 404.
+- id: rfc9457-problem-details
+  conforms: false
+  evidence: >-
+    Errors are bespoke JSON (application/json; charset=utf-8), not
+    application/problem+json. Two inconsistent envelopes: {error_code, message}
+    for general errors and {errorcode, reset_time, limit_time_unit, call_limit,
+    error} for 429. See errors/.
+- id: rfc9116-security-txt
+  conforms: true
+  evidence: >-
+    /.well-known/security.txt returns 200 with Contact, Expires and
+    Preferred-Languages fields. Saved to well-known/.
+  caveat: >-
+    No "Policy:" field; Expires is set to 2050, well beyond the RFC's guidance.
+- id: rfc8594-sunset-header
+  conforms: false
+  evidence: >-
+    No Sunset or Deprecation header. Deprecation is signalled instead through a
+    bespoke ODS-Explore-API-Deprecation header plus a Link header to the changelog.
+- id: rfc9727-api-catalog
+  conforms: false
+  evidence: /.well-known/api-catalog returns 404.
+- id: dcat-ap
+  conforms: true
+  evidence: >-
+    GET /api/explore/v2.1/catalog/exports/dcat returns 200,
+    application/rdf+xml, 4.9 MB, covering all 146 datasets. A dcat_ap_format path
+    variant is declared in the OpenAPI (exportCatalogDCAT).
+- id: dublin-core
+  conforms: true
+  evidence: /api/explore/v2.1/catalog/exports/dublin_core is advertised in the exports link list.
+- id: rdf
+  conforms: true
+  evidence: rdf and ttl (Turtle) catalogue exports are both advertised and reachable.
+- id: rss-2.0
+  conforms: true
+  evidence: >-
+    /api/explore/v2.1/catalog/exports/rss returns a valid RSS 2.0 channel listing
+    the datasets. This is the only change-notification surface.
+- id: sitemaps-xml
+  conforms: true
+  evidence: >-
+    /sitemap.xml returns a sitemaps.org 0.9 urlset with per-dataset <lastmod>
+    dates; declared in /robots.txt.
+- id: geojson
+  conforms: true
+  evidence: >-
+    GeoJSON is an available dataset export format and the v2.1 changelog documents
+    a change to datetime encoding in GeoJSON exports. Many datasets are GIS layers.
+- id: gpx
+  conforms: true
+  evidence: exportRecordsGPX operation (/catalog/datasets/{dataset_id}/exports/gpx).
+- id: apache-parquet
+  conforms: true
+  evidence: exportRecordsParquet operation (/catalog/datasets/{dataset_id}/exports/parquet).
+- id: cors
+  conforms: true
+  evidence: >-
+    Access-Control-Allow-Origin '*', explicit Access-Control-Allow-Methods and a
+    full Access-Control-Expose-Headers list covering the rate-limit and
+    deprecation headers.
+- id: hsts
+  conforms: true
+  evidence: 'strict-transport-security: max-age=31536000;includeSubdomains on the API host.'
+- id: json-api
+  conforms: false
+  evidence: Responses are bespoke JSON, not JSON:API media type or document structure.
+- id: odata
+  conforms: false
+- id: graphql
+  conforms: false
+  evidence: /api/graphql returns 404; no GraphQL surface on this domain.
+- id: asyncapi
+  conforms: false
+  evidence: >-
+    No event, streaming or webhook surface exists. Not a gap to be penalised — a
+    read-only catalogue API has nothing to publish events about beyond the RSS feed.
+- id: mcp
+  conforms: false
+  evidence: >-
+    No first-party MCP server. Third-party generic Opendatasoft MCP packages exist
+    on npm (@pipeworx/*) but none targets this domain. See mcp/.
+- id: cc-by-4.0
+  conforms: partial
+  evidence: >-
+    GET /api/explore/v2.1/catalog/facets?facet=license returned, live on
+    2026-07-27: CC BY 4.0 = 96 datasets, "SP ENW Shared Licence" = 41,
+    Open Government Licence v3.0 = 8. So 104 of 146 datasets carry a recognised
+    open licence and 41 sit under a bespoke shared licence that is not one.
+- id: ogl-v3.0
+  conforms: partial
+  evidence: 8 of 146 datasets carry Open Government Licence v3.0 (same facet query).
+- id: ofgem-data-best-practice
+  conforms: true
+  scope: regulatory
+  evidence: >-
+    The portal is a live implementation of the open-data duty imposed by Ofgem's
+    Data Best Practice Guidance under the RIIO-ED2 digitalisation licence
+    condition: 146 datasets, machine-readable API, DCAT-AP catalogue export. See
+    review.yml for the full mandate assessment.
+  caveat: >-
+    The "presumed open" principle is only partly met — 41 datasets are under a
+    bespoke SP ENW Shared Licence, and record-level access requires registration
+    even for CC BY 4.0 datasets.
+- id: cdr-energy
+  conforms: false
+  evidence: Australian Consumer Data Right has no UK effect. Not applicable.
+- id: green-button-espi
+  conforms: false
+  evidence: >-
+    No Green Button or ESPI reference in either OpenAPI document, on the portal,
+    or across the 146-dataset catalogue. No UK footprint for the standard.
+- id: fhir-r4
+  conforms: false
+- id: fapi
+  conforms: false
+- id: scim-2.0
+  conforms: false
+- id: psd2
+  conforms: false
+certifications_published: false
+certifications_note: >-
+  The platform vendor states its security policy "is based on the ISO 27001 and
+  ISO 27002 standards" but names no certificate, audit report or attestation.
+  Electricity North West publishes no compliance page reachable to a non-browser
+  client. No `Compliance` pointer is emitted, because none is earned.

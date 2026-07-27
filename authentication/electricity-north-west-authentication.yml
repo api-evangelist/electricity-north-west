@@ -1,0 +1,107 @@
+generated: '2026-07-27'
+method: searched
+source: >-
+  Derived from openapi/electricity-north-west-explore-api-v2-0-openapi.json and
+  openapi/electricity-north-west-explore-api-v2-1-openapi.json, then upgraded from
+  the vendor authentication reference at
+  https://help.opendatasoft.com/apis/ods-explore-v2/#section/Authentication and
+  live anonymous/gated probes of the electricitynorthwest domain on 2026-07-27.
+docs: https://help.opendatasoft.com/apis/ods-explore-v2/#section/Authentication
+description: >-
+  The OpenAPI documents declare a single scheme (an `apikey` query parameter),
+  but that under-describes what the platform actually supports. The Opendatasoft
+  (Huwise) Explore API accepts three credential styles — an API key in the
+  Authorization header (the vendor's recommended form), the same key as an
+  `apikey` query parameter (the only one in the spec), and a portal session
+  cookie — plus a full OAuth2 authorization-code flow for third-party
+  applications. On the SP Electricity North West domain, catalogue and dataset
+  METADATA is readable anonymously, but RECORD data is not: every dataset probed
+  returned ForbiddenAccess to an unauthenticated caller.
+summary:
+  types: [apiKey, oauth2, cookie]
+  api_key_in: [header, query]
+  oauth2_flows: [authorizationCode]
+  anonymous_access: partial
+schemes:
+- name: apikey (Authorization header)
+  type: apiKey
+  in: header
+  parameter: Authorization
+  format: 'Authorization: Apikey <API_KEY>'
+  recommended: true
+  documented_only: true
+  sources: [https://help.opendatasoft.com/apis/ods-explore-v2/#section/Authentication]
+  note: >-
+    The vendor explicitly recommends the header over the query parameter because
+    headers are not retained in browser history or server logs. This form is NOT
+    declared in either OpenAPI document — a real gap between spec and docs.
+- name: apikey
+  type: apiKey
+  in: query
+  parameter: apikey
+  description: API key to make authenticated requests.
+  sources:
+  - openapi/electricity-north-west-explore-api-v2-0-openapi.json
+  - openapi/electricity-north-west-explore-api-v2-1-openapi.json
+- name: portal session cookie
+  type: cookie
+  in: cookie
+  note: >-
+    Being logged in to the portal passes a session cookie with API calls, which
+    is how the in-portal API console at /api-console/explore/v2.1/ authenticates.
+  sources: [https://help.opendatasoft.com/apis/ods-explore-v2/#section/Authentication]
+- name: OAuth2
+  type: oauth2
+  flows:
+  - flow: authorizationCode
+    authorizationUrl: https://electricitynorthwest.opendatasoft.com/oauth2/authorize/
+    tokenUrl: https://electricitynorthwest.opendatasoft.com/oauth2/token/
+    scopes:
+      all: Full access on behalf of the authorizing user (the only scope supported)
+  standards: [RFC 6749, RFC 6750]
+  client_types: [confidential, public]
+  registration: >-
+    Applications are registered per domain from the "My applications" tab of the
+    portal account page; registration yields a client_id and client_secret and
+    requires a redirect URI.
+  token_lifetime: >-
+    The authorization code is 30 characters and must be exchanged within 1 hour.
+    Bearer tokens expire and are renewed with a refresh token.
+  documented_only: true
+  probe:
+    authorize_endpoint_status: 200 (redirects to /login/?next=/oauth2/authorize/)
+    token_endpoint_status: 405 on GET (POST-only, as documented)
+  sources: [https://help.opendatasoft.com/apis/ods-explore-v2/#section/Authentication]
+key_management:
+  url: https://electricitynorthwest.opendatasoft.com/account/
+  page: My API keys tab of the portal account page
+  registration: https://electricitynorthwest.opendatasoft.com/pages/registration_log_in/
+  cost: free self-serve account
+  scoping: >-
+    By default an API key inherits the full rights of the user that created it,
+    so keys must not be shared. Per-key permissions can be narrowed through the
+    separate Automation API.
+  revocation: Keys can be listed and revoked from the same account page.
+access_observations:
+  generated: '2026-07-27'
+  anonymous_allowed:
+  - GET /api/explore/v2.1/catalog/datasets — 200, total_count 146
+  - GET /api/explore/v2.1/catalog/datasets/{dataset_id} — 200
+  - GET /api/explore/v2.1/catalog/facets — 200
+  - GET /api/explore/v2.1/catalog/exports — 200
+  - GET /api/explore/v2.1/catalog/exports/dcat — 200 (4.9 MB RDF/XML)
+  anonymous_denied:
+  - >-
+    GET /api/explore/v2.1/catalog/datasets/{dataset_id}/records — error_code
+    "ForbiddenAccess" on all five datasets probed (dfes-lv-headroom-monitored,
+    enwl_control_boundary, biodiversity-tree-opportunity, lv_load_duration,
+    enwl-lsoa-polygons). Several dataset descriptions state "Actual dataset
+    content is available to registered users only".
+  conclusion: >-
+    Metadata is open; record-level data requires a free registered account and an
+    API key. This is a registration wall, not a paywall.
+unauthorized_response:
+  status: 401
+  note: >-
+    Documented for private catalogs. In practice on this domain a missing
+    credential for record data surfaces as an error_code "ForbiddenAccess" body.

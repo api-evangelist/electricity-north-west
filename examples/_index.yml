@@ -1,0 +1,75 @@
+generated: '2026-07-27'
+method: searched
+source: >-
+  Real, unedited responses captured from
+  https://electricitynorthwest.opendatasoft.com/api/explore/v2.1/ on 2026-07-27.
+  Nothing here is synthesised — each file is the verbatim body the live API
+  returned for the request recorded against it.
+description: >-
+  Worked request/response examples for the SP Electricity North West Explore API,
+  including two error cases that matter more than the happy paths: the ODSQL
+  validation error a client hits when it guesses a field name, and the
+  ForbiddenAccess body that record endpoints return to an anonymous caller on this
+  domain.
+api: openapi/electricity-north-west-explore-api-v2-1-openapi.json
+base_url: https://electricitynorthwest.opendatasoft.com/api/explore/v2.1
+examples:
+- file: electricity-north-west-list-datasets-example.json
+  operation: getDatasets
+  request: GET /catalog/datasets?limit=2
+  status: 200
+  auth: none
+  note: >-
+    Catalogue search. total_count is 146. Each result carries dataset_id,
+    dataset_uid, has_records, data_visible, features, fields[] and metas.
+- file: electricity-north-west-get-dataset-example.json
+  operation: getDataset
+  request: GET /catalog/datasets/dfes-lv-headroom-monitored
+  status: 200
+  auth: none
+  note: >-
+    Single dataset with its full field schema and metadata. Licence is CC BY 4.0,
+    title "SP ENW - DFES - LV Headroom (Monitored)". The `fields` array here is
+    what an agent must read before writing any ODSQL for this dataset.
+- file: electricity-north-west-catalog-facets-license-example.json
+  operation: getDatasetsFacets
+  request: GET /catalog/facets?facet=license
+  status: 200
+  auth: none
+  note: >-
+    The licence split across the whole catalogue, straight from the API:
+    CC BY 4.0 = 96, SP ENW Shared Licence = 41, Open Government Licence v3.0 = 8.
+- file: electricity-north-west-list-export-formats-example.json
+  operation: listExportFormats
+  request: GET /catalog/exports
+  status: 200
+  auth: none
+  note: >-
+    Format discovery. Returns a links[] of {rel, href} for csv, json, data.json,
+    rdf, ttl, dublin_core, dcat, rss, sitemap and xlsx.
+- file: electricity-north-west-odsql-error-example.json
+  operation: getDatasets
+  request: GET /catalog/datasets?limit=1&select=dataset_id,metas
+  status: 400
+  auth: none
+  kind: error
+  note: >-
+    The general error envelope — {error_code, message}. `metas` is present in the
+    response body but is not a selectable ODSQL field, and the message names both
+    the fault and the offending clause.
+- file: electricity-north-west-forbidden-records-example.json
+  operation: getRecords
+  request: GET /catalog/datasets/dfes-lv-headroom-monitored/records?limit=1
+  status: '200 body carrying error_code ForbiddenAccess'
+  auth: none
+  kind: error
+  note: >-
+    The registration wall. Record data on this domain requires a free account and
+    an API key even for CC BY 4.0 datasets. This error_code is declared in neither
+    OpenAPI document.
+not_captured:
+- >-
+  A successful records response. It requires an API key, and the pipeline does not
+  create accounts or hold credentials for providers. The response shape is
+  documented in the `records` schema of the OpenAPI: {total_count, results[],
+  _links[]} with dataset-specific keys inside each result.

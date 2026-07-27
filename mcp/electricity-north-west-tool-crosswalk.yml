@@ -1,0 +1,180 @@
+generated: '2026-07-27'
+method: derived
+source: >-
+  Binds every tool in mcp/electricity-north-west-mcp.yml to its backing
+  operationId in openapi/electricity-north-west-explore-api-v2-1-openapi.json.
+  Every operationId below was read verbatim from that document.
+description: >-
+  A one-to-one crosswalk, which is the unusual case. Because the candidate MCP
+  tool list was derived from the OpenAPI rather than harvested from a running
+  server, there are no MCP-only tools and no REST-only operations: the surfaces
+  are identical by construction. That makes the crosswalk's value the INPUT
+  CONTRACT rather than the mapping — each tool inherits its real parameter set
+  from the operation's OpenAPI `parameters`, so an agent gets a genuine
+  inputSchema instead of a guessed one. Confidence is high throughout for the
+  same reason.
+surfaces:
+  openapi:
+    file: openapi/electricity-north-west-explore-api-v2-1-openapi.json
+    version: OpenAPI 3.0.3
+    server: https://electricitynorthwest.opendatasoft.com/api/explore/v2.1
+    operations: 16
+    gated: partially — record and dataset-export operations require an API key
+  openapi_previous:
+    file: openapi/electricity-north-west-explore-api-v2-0-openapi.json
+    server: https://electricitynorthwest.opendatasoft.com/api/explore/v2.0
+    operations: 16
+    note: Same 16 operationIds. Every tool below maps to v2.0 identically.
+  graphql:
+    endpoint: null
+    note: No GraphQL surface. /api/graphql returns 404.
+  mcp:
+    url: null
+    status: candidate — no server is published, so tools/list could not be called
+shared_input_contract:
+  note: >-
+    Every operation accepts the same ODSQL clause set, which is why the tool
+    surface is so uniform. These parameters are declared in the OpenAPI and are
+    the real inputSchema fields each tool inherits.
+  common_parameters:
+    select: ODSQL select expression — fields, functions, labelled expressions
+    where: ODSQL filter expression with full-text and boolean/functional operators
+    group_by: ODSQL aggregation grouping
+    order_by: comma-separated fields/aggregations with asc|desc
+    refine: facet-value restriction
+    exclude: facet-value exclusion
+    limit: integer, default 10, max 100 without group_by
+    offset: integer, min 0; offset + limit must stay under 10000
+    lang: language for localisation
+    timezone: timezone for date handling
+crosswalk:
+- tool: list_datasets
+  category: catalog
+  rest: [getDatasets]
+  http: GET /catalog/datasets
+  binding: rest
+  confidence: high
+- tool: get_dataset
+  category: catalog
+  rest: [getDataset]
+  http: GET /catalog/datasets/{dataset_id}
+  binding: rest
+  confidence: high
+  note: >-
+    Prerequisite for any records query — its `fields` array is the only source of
+    valid ODSQL field names for that dataset.
+- tool: list_catalog_facets
+  category: catalog
+  rest: [getDatasetsFacets]
+  http: GET /catalog/facets
+  binding: rest
+  confidence: high
+- tool: list_catalog_export_formats
+  category: export
+  rest: [listExportFormats]
+  http: GET /catalog/exports
+  binding: rest
+  confidence: high
+- tool: export_catalog
+  category: export
+  rest: [exportDatasets]
+  http: GET /catalog/exports/{format}
+  binding: rest
+  confidence: high
+- tool: export_catalog_csv
+  category: export
+  rest: [exportCatalogCSV]
+  http: GET /catalog/exports/csv
+  binding: rest
+  confidence: high
+  note: A fixed-format specialisation of exportDatasets; both exist in the spec.
+- tool: export_catalog_dcat
+  category: export
+  rest: [exportCatalogDCAT]
+  http: GET /catalog/exports/dcat{dcat_ap_format}
+  binding: rest
+  confidence: high
+  note: Verified live — returns application/rdf+xml, 4.9 MB, covering all 146 datasets.
+- tool: query_records
+  category: records
+  rest: [getRecords]
+  http: GET /catalog/datasets/{dataset_id}/records
+  binding: rest
+  confidence: high
+  gated: true
+- tool: get_record
+  category: records
+  rest: [getRecord]
+  http: GET /catalog/datasets/{dataset_id}/records/{record_id}
+  binding: rest
+  confidence: high
+  gated: true
+- tool: list_dataset_facets
+  category: records
+  rest: [getRecordsFacets]
+  http: GET /catalog/datasets/{dataset_id}/facets
+  binding: rest
+  confidence: high
+  gated: true
+- tool: list_dataset_attachments
+  category: dataset
+  rest: [getDatasetAttachments]
+  http: GET /catalog/datasets/{dataset_id}/attachments
+  binding: rest
+  confidence: high
+- tool: list_dataset_export_formats
+  category: export
+  rest: [listDatasetExportFormats]
+  http: GET /catalog/datasets/{dataset_id}/exports
+  binding: rest
+  confidence: high
+- tool: export_records
+  category: export
+  rest: [exportRecords]
+  http: GET /catalog/datasets/{dataset_id}/exports/{format}
+  binding: rest
+  confidence: high
+  gated: true
+  note: No record-count cap — the correct tool for bulk retrieval.
+- tool: export_records_csv
+  category: export
+  rest: [exportRecordsCSV]
+  http: GET /catalog/datasets/{dataset_id}/exports/csv
+  binding: rest
+  confidence: high
+  gated: true
+- tool: export_records_parquet
+  category: export
+  rest: [exportRecordsParquet]
+  http: GET /catalog/datasets/{dataset_id}/exports/parquet
+  binding: rest
+  confidence: high
+  gated: true
+- tool: export_records_gpx
+  category: export
+  rest: [exportRecordsGPX]
+  http: GET /catalog/datasets/{dataset_id}/exports/gpx
+  binding: rest
+  confidence: high
+  gated: true
+mcp_only: []
+graphql_only: []
+rest_only: []
+coverage:
+  tools_named: 16
+  tools_bound: 16
+  mcp_only: 0
+  graphql_only: 0
+  rest_operations_total: 16
+  rest_operations_with_tool: 16
+  binding_rate: 1.0
+caveats:
+- >-
+  This crosswalk is derived, not observed. There is no published MCP server, so
+  no tools/list response was available to compare against. If a first-party
+  server is later published, re-derive: the real tool names and groupings will
+  almost certainly differ from this one-per-operation mapping (a practical server
+  would likely collapse the six export operations into one).
+- >-
+  Six of the 16 tools are auth-gated on this domain. An agent operating
+  anonymously has a 10-tool surface covering catalogue discovery and metadata only.

@@ -1,0 +1,45 @@
+generated: '2026-07-27'
+method: generated
+source: >-
+  Packaged Agent Skills generated from
+  openapi/electricity-north-west-explore-api-v2-1-openapi.json. Every operationId
+  cited in every skill was verified verbatim in that document; cross-cutting rules
+  cite conventions/, errors/, authentication/, rate-limits/, data-model/ and
+  sandbox/. No provider-published skills or AGENTS.md were found on the portal, in
+  the vendor documentation, or in the spenw-open-data GitHub account.
+description: >-
+  Three skills covering the whole 16-operation Explore API surface, sequenced the
+  way the API actually has to be used: discover a dataset and read its field
+  schema, then query records with ODSQL, then bulk-export past the paging ceiling.
+  The sequencing is not stylistic — this API has no global field vocabulary, so an
+  agent that skips the discovery step will fail with 400 ODSQLError on its first
+  query.
+api: openapi/electricity-north-west-explore-api-v2-1-openapi.json
+skills:
+- file: electricity-north-west-discover-datasets.md
+  name: Discover SP Electricity North West open datasets
+  api: openapi/electricity-north-west-explore-api-v2-1-openapi.json
+  operations: [getDatasets, getDatasetsFacets, getDataset, getDatasetAttachments]
+  auth_required: false
+  order: 1
+- file: electricity-north-west-query-network-records.md
+  name: Query and aggregate network dataset records
+  api: openapi/electricity-north-west-explore-api-v2-1-openapi.json
+  operations: [getDataset, getRecords, getRecord, getRecordsFacets]
+  auth_required: true
+  order: 2
+- file: electricity-north-west-bulk-export.md
+  name: Bulk-export datasets and the catalogue
+  api: openapi/electricity-north-west-explore-api-v2-1-openapi.json
+  operations: [listExportFormats, exportDatasets, exportCatalogCSV, exportCatalogDCAT, listDatasetExportFormats, exportRecords, exportRecordsCSV, exportRecordsParquet, exportRecordsGPX]
+  auth_required: partial
+  order: 3
+coverage:
+  operations_total: 16
+  operations_covered: 16
+safety:
+  write_operations: 0
+  note: >-
+    The entire API is GET-only, so no skill here can mutate anything. The only
+    consequence of a mistake is quota consumption against a shared 5000 calls/day
+    domain budget.

@@ -1,0 +1,81 @@
+overlay: 1.0.0
+info:
+  title: API Evangelist enhancements for SP Electricity North West Explore API v2.0
+  version: 1.0.0
+extends: openapi/electricity-north-west-explore-api-v2-0-openapi.json
+x-generated: '2026-07-27'
+x-method: generated
+x-source: >-
+  Enhancements derived from the vendor versioning policy at
+  https://help.opendatasoft.com/apis/ods-explore-v2/#section/Versioning and from
+  live probes of the electricitynorthwest domain on 2026-07-27. The harvested
+  OpenAPI is never mutated.
+actions:
+- target: $.info
+  update:
+    x-apievangelist-provider: Electricity North West
+    x-apievangelist-provider-id: electricity-north-west
+    x-apievangelist-legal-name: SP Electricity North West
+    x-apievangelist-sector: Energy — electricity distribution network operator (DNO)
+    x-apievangelist-country: United Kingdom
+    x-apievangelist-platform: Opendatasoft (rebranding to Huwise) — hosted tenant
+    x-apievangelist-artifacts:
+      authentication: authentication/electricity-north-west-authentication.yml
+      conventions: conventions/electricity-north-west-conventions.yml
+      errors: errors/electricity-north-west-problem-types.yml
+      lifecycle: lifecycle/electricity-north-west-lifecycle.yml
+      changelog: changelog/electricity-north-west-changelog.yml
+- target: $.info
+  description: >-
+    Mark this document as the superseded version and record the migration path,
+    which the spec itself does not state.
+  update:
+    x-apievangelist-status: superseded
+    x-apievangelist-superseded-by: >-
+      openapi/electricity-north-west-explore-api-v2-1-openapi.json
+      (https://electricitynorthwest.opendatasoft.com/api/explore/v2.1)
+    x-apievangelist-still-served: true
+    x-apievangelist-sunset-date: null
+    x-apievangelist-deprecation-signal: >-
+      Responses from this version carry the ODS-Explore-API-Deprecation header,
+      with a Link header pointing at the v2.1 changelog. There is no RFC 8594
+      Sunset header and no announced removal date.
+    x-apievangelist-migration-notes:
+      removed_in_v2_1:
+      - /api/explore/v2.0/<source>/datasets/<dataset_id>/aggregates
+      - /api/explore/v2.0/<source>/datasets/<dataset_id>/query
+      merged_into: the single records endpoint
+      breaking_changes:
+      - XLSX replaces XLS as the spreadsheet export format.
+      - The search() ODSQL function changed; suggest() and startswith() were added.
+      - Date functions return integers rather than strings.
+      - Grouping by geo fields deprecated in favour of geo_cluster().
+      - Date aggregation keys formatted as ISO dates rather than timestamps.
+      - CSV exports emit a BOM by default.
+      - GPX exports use <extension> rather than <desc>.
+      - GeoJSON datetimes output as ISO strings rather than integer timestamps.
+      changed_response_schemas:
+      - /datasets
+      - /datasets/{dataset_id}
+      - /datasets/{dataset_id}/records
+      - /datasets/{dataset_id}/records/{record_id}
+      changelog: changelog/electricity-north-west-changelog.yml
+- target: $.info
+  description: Shared runtime semantics — identical to v2.1 on this domain.
+  update:
+    x-apievangelist-auth-header: 'Authorization: Apikey <API_KEY>'
+    x-apievangelist-rate-limit:
+      scope: domain
+      limit: 5000
+      unit: day
+      reset: midnight UTC
+      observed: '2026-07-27'
+    x-apievangelist-error-format: bespoke-json
+    x-apievangelist-idempotency:
+      supported: true
+      mechanism: inherent — GET-only surface
+      idempotency_key_header: null
+- target: $.servers
+  update:
+    x-apievangelist-environment: production
+    x-apievangelist-status: superseded but live

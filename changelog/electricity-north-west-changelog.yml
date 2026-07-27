@@ -1,0 +1,77 @@
+generated: '2026-07-27'
+method: searched
+source: >-
+  https://help.opendatasoft.com/apis/ods-explore-v2/#section/Introduction/v2.1-Changelog
+  — the only changelog published for the API this provider serves.
+url: https://help.opendatasoft.com/apis/ods-explore-v2/#section/Introduction/v2.1-Changelog
+description: >-
+  Electricity North West publishes no changelog of its own. The API's changelog is
+  the Opendatasoft (Huwise) Explore API version changelog, and it is version-scoped
+  rather than dated: it enumerates what changed between v2.0 and v2.1 with no
+  release dates and no ongoing entries. That is the honest shape of it — a single
+  migration note, not a rolling log. The `Link` response header on a superseded
+  version points at this document.
+scheme: version-scoped (uri-path versions), undated
+current_version: v2.1
+dated: false
+cadence_claimed: >-
+  "New features are added every month and bugs are fixed every week" — within the
+  backward-compatibility guarantees, so those changes are not individually logged.
+entries:
+- version: v2.1
+  date: null
+  status: current, stable, production ready
+  breaking: true
+  summary: >-
+    The v2.1 release of the Explore API. The vendor states plainly that "some of
+    them may not be backward compatible with the previous version".
+  removed_endpoints:
+  - path: /api/explore/v2.0/<source>/datasets/<dataset_id>/aggregates
+    replacement: merged into the records endpoint
+  - path: /api/explore/v2.0/<source>/datasets/<dataset_id>/query
+    replacement: merged into the records endpoint
+  changed_response_schemas:
+  - /api/explore/v2.1/<source>/datasets
+  - /api/explore/v2.1/<source>/datasets/<dataset_id>
+  - /api/explore/v2.1/<source>/datasets/<dataset_id>/records
+  - /api/explore/v2.1/<source>/datasets/<dataset_id>/records/<record_id>
+  additions:
+  - group_by is now available on the export endpoints.
+  - New full-text functions suggest() and startswith().
+  - >-
+    Geometry functions renamed to clearer names — within_distance(), intersects(),
+    disjoint(), within(); the old distance() and geometry(...) forms still work.
+  breaking_changes:
+  - XLSX export format replaces the old XLS format.
+  - The search() function has been changed.
+  - >-
+    Date functions year(), month(), day(), hour(), minute(), second() now return
+    integers instead of strings.
+  - Grouping by geo fields is deprecated in favour of the geo_cluster() function.
+  - In a group_by, null values are now grouped.
+  - Date aggregation keys are formatted as ISO dates, previously as timestamps.
+  - CSV exports emit a Byte Order Mark (BOM) by default.
+  - GPX exports use <extension> rather than <desc> by default to export attributes.
+  - >-
+    Datetimes in GeoJSON exports are output as ISO-format strings, previously as
+    integer timestamps.
+- version: v2.0
+  date: null
+  status: superseded but still served on this domain
+  breaking: false
+  summary: >-
+    Previous generation of the Explore API, still live at
+    https://electricitynorthwest.opendatasoft.com/api/explore/v2.0 with its own
+    OpenAPI document. No separate changelog is published for it; its responses
+    carry the ODS-Explore-API-Deprecation header pointing at the v2.1 changelog.
+catalogue_change_feed:
+  note: >-
+    Dataset-level change is published separately from API change. The catalogue
+    RSS export and the sitemap <lastmod> values are the only signals that the 146
+    datasets have been updated.
+  rss: https://electricitynorthwest.opendatasoft.com/api/explore/v2.1/catalog/exports/rss
+  sitemap: https://electricitynorthwest.opendatasoft.com/sitemap.xml
+gaps:
+- No dated release entries — impossible to tell when v2.1 shipped from this document.
+- No ongoing changelog for the weekly/monthly non-breaking changes the vendor claims.
+- No provider-specific changelog for the SP Electricity North West catalogue itself.

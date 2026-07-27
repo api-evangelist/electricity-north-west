@@ -70,6 +70,8 @@ apis:
   properties:
   - type: OpenAPI
     url: openapi/electricity-north-west-explore-api-v2-1-openapi.json
+  - type: Overlay
+    url: overlays/electricity-north-west-explore-api-v2-1-overlay.yaml
   - type: APIReference
     url: https://electricitynorthwest.opendatasoft.com/api-console/explore/v2.1/
   - type: Documentation
@@ -98,6 +100,8 @@ apis:
   properties:
   - type: OpenAPI
     url: openapi/electricity-north-west-explore-api-v2-0-openapi.json
+  - type: Overlay
+    url: overlays/electricity-north-west-explore-api-v2-0-overlay.yaml
   - type: Documentation
     url: https://help.huwise.com/apis/ods-explore-v2/
   - type: Portal
@@ -105,20 +109,90 @@ apis:
 common:
 - type: Website
   url: https://www.enwl.co.uk/
-- type: Blog
-  url: https://news.enwl.co.uk/
-- type: LinkedIn
-  url: https://www.linkedin.com/company/electricity-north-west
+- type: DeveloperPortal
+  url: https://electricitynorthwest.opendatasoft.com/api
 - type: Portal
   url: https://electricitynorthwest.opendatasoft.com/
 - type: Documentation
   url: https://electricitynorthwest.opendatasoft.com/api
+- type: APIReference
+  url: https://help.huwise.com/apis/ods-explore-v2/
+- type: GettingStarted
+  url: https://help.huwise.com/apis/ods-explore-v2/#section/Getting-Started
+- type: Sandbox
+  url: sandbox/electricity-north-west-sandbox.yml
+- type: Console
+  url: https://electricitynorthwest.opendatasoft.com/api-console/explore/v2.1/
+- type: SignUp
+  url: https://electricitynorthwest.opendatasoft.com/pages/registration_log_in/
+- type: Registration
+  url: https://electricitynorthwest.opendatasoft.com/pages/registration_log_in/
+- type: Support
+  url: mailto:dataportal@enwl.co.uk
+- type: Blog
+  url: https://news.enwl.co.uk/
+- type: LinkedIn
+  url: https://www.linkedin.com/company/electricity-north-west
+- type: GitHubOrganization
+  url: https://github.com/spenw-open-data
+- type: TermsOfService
+  url: https://www.enwl.co.uk/about-us/terms-and-conditions/
+- type: PrivacyPolicy
+  url: https://www.enwl.co.uk/misc/privacy-policy/
 - type: Data
   url: https://electricitynorthwest.opendatasoft.com/explore
 - type: Data
   url: https://electricitynorthwest.opendatasoft.com/api/explore/v2.1/catalog/exports/dcat
-- type: Registration
-  url: https://electricitynorthwest.opendatasoft.com/pages/registration_log_in/
+- type: Authentication
+  url: authentication/electricity-north-west-authentication.yml
+- type: OAuthScopes
+  url: scopes/electricity-north-west-scopes.yml
+- type: Conventions
+  url: conventions/electricity-north-west-conventions.yml
+- type: Idempotency
+  url: conventions/electricity-north-west-conventions.yml
+- type: RateLimits
+  url: rate-limits/electricity-north-west-rate-limits.yml
+- type: ErrorCatalog
+  url: errors/electricity-north-west-problem-types.yml
+- type: Lifecycle
+  url: lifecycle/electricity-north-west-lifecycle.yml
+- type: StatusPage
+  url: https://status.huwise.com/
+- type: Deprecation
+  url: https://help.huwise.com/apis/ods-explore-v2/#section/Versioning/Deprecation-warnings
+- type: ChangeLog
+  url: changelog/electricity-north-west-changelog.yml
+- type: DataModel
+  url: data-model/electricity-north-west-data-model.yml
+- type: Conformance
+  url: conformance/electricity-north-west-conformance.yml
+- type: Packages
+  url: packages/electricity-north-west-packages.yml
+- type: SDKs
+  url: packages/electricity-north-west-packages.yml
+- type: Components
+  url: components/electricity-north-west-components.yml
+- type: MCPServer
+  url: mcp/electricity-north-west-mcp.yml
+- type: ToolCrosswalk
+  url: mcp/electricity-north-west-tool-crosswalk.yml
+- type: AgentSkill
+  url: skills/_index.yml
+- type: Examples
+  url: examples/_index.yml
+- type: LLMsTxt
+  url: llms/electricity-north-west-llms.txt
+- type: WellKnown
+  url: well-known/electricity-north-west-well-known.yml
+- type: SecurityTxt
+  url: well-known/electricity-north-west-security.txt
+- type: DomainSecurity
+  url: security/electricity-north-west-domain-security.yml
+- type: VulnerabilityDisclosure
+  url: security/electricity-north-west-vulnerability-disclosure.yml
+- type: Security
+  url: https://www.huwise.com/en/security/
 - type: Regulator
   url: https://www.ofgem.gov.uk/sites/default/files/2024-10/Track_Changes_Data_Best_Practice_Guidance_v301728394292260.pdf
 maintainers:

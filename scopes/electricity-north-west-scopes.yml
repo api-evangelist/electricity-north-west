@@ -1,0 +1,48 @@
+generated: '2026-07-27'
+method: searched
+source: >-
+  https://help.opendatasoft.com/apis/ods-explore-v2/#section/Authentication —
+  the "Using OAuth2 authorization" section of the Opendatasoft (Huwise) Explore
+  API reference that governs the SP Electricity North West domain.
+docs: https://help.opendatasoft.com/apis/ods-explore-v2/#section/Authentication
+description: >-
+  Neither OpenAPI document declares an oauth2 securityScheme — both declare only
+  the `apikey` query parameter — so the mechanical derivation from the specs
+  yields nothing. The vendor documentation, however, does document a full OAuth2
+  authorization-code flow against this domain, with a deliberately minimal scope
+  model: exactly one scope, `all`. That is the entire scope surface. It is
+  recorded here so the absence of granular scopes is on the record as a finding
+  rather than as a gap in our harvesting.
+spec_declared: false
+schemes:
+- name: OAuth2
+  source: https://help.opendatasoft.com/apis/ods-explore-v2/#section/Authentication
+  standards: [RFC 6749, RFC 6750]
+  flows:
+  - flow: authorizationCode
+    authorizationUrl: https://electricitynorthwest.opendatasoft.com/oauth2/authorize/
+    tokenUrl: https://electricitynorthwest.opendatasoft.com/oauth2/token/
+    refresh: supported via refresh_token grant
+    parameter_name: scopes
+    delimiter: space
+scopes:
+- scope: all
+  description: >-
+    Full access to the data the authorizing user can see on this domain. The
+    documentation states plainly: "a list of space-separated requested scopes.
+    Currently, only `all` is supported."
+  flows: [authorizationCode]
+  sources: [https://help.opendatasoft.com/apis/ods-explore-v2/#section/Authentication]
+notes:
+- >-
+  There is no read/write split, no per-dataset scope and no per-resource scope.
+  Consent is all-or-nothing at the domain level, and an application registered
+  on one domain cannot reach another domain's data.
+- >-
+  API keys are the other authorization surface and they are not scoped by
+  default either — a key inherits the creating user's full rights. Per-key
+  permissions can only be narrowed through the separate Automation API.
+- >-
+  Because every Explore operation is a read (GET only), the coarse scope model
+  is less consequential than it would be on a write-capable API — but it still
+  means an OAuth2 client cannot be least-privileged.

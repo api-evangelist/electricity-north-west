@@ -1,0 +1,132 @@
+generated: '2026-07-27'
+method: derived
+source: >-
+  Derived from the 4xx/5xx responses declared across all 16 operations in
+  openapi/electricity-north-west-explore-api-v2-1-openapi.json and
+  openapi/electricity-north-west-explore-api-v2-0-openapi.json, enriched with the
+  vendor reference at https://help.opendatasoft.com/apis/ods-explore-v2/ and with
+  error bodies captured live from
+  https://electricitynorthwest.opendatasoft.com/api/explore/v2.1/ on 2026-07-27.
+format: bespoke-json
+rfc9457: false
+description: >-
+  The Explore API does NOT use RFC 9457 problem+json. It returns two different
+  bespoke JSON envelopes depending on the failure class, both served as
+  application/json; charset=utf-8. Every one of the 16 operations declares the
+  same five response codes — 200, 400, 401, 429, 500 — so the error contract is
+  uniform across the whole surface. There is no published error-code registry;
+  the codes below are the ones actually observed or documented by example.
+envelopes:
+- name: general
+  applies_to: [400, 401, 403-style bodies, 500]
+  media_type: application/json; charset=utf-8
+  required: [error_code, message]
+  fields:
+    error_code: string — machine-readable identifier
+    message: string — human-readable explanation, often naming the offending ODSQL clause
+- name: quota
+  applies_to: [429]
+  media_type: application/json; charset=utf-8
+  required: [errorcode, reset_time, limit_time_unit, call_limit, error]
+  fields:
+    errorcode: number
+    reset_time: ISO 8601 timestamp at which the quota resets
+    limit_time_unit: string — e.g. "day"
+    call_limit: number — the ceiling that was hit
+    error: string — human-readable explanation
+  note: >-
+    Spelled `errorcode` (no underscore) and `error` rather than `message`. The
+    two envelopes are genuinely inconsistent; clients must branch on status.
+problems:
+- status: 400
+  code: ODSQLError
+  title: ODSQL query is malformed
+  envelope: general
+  remediation: >-
+    Fix the offending clause. The message names both the fault and the clause,
+    e.g. "Unknown field: metas. Clause(s) containing the error(s): select." Field
+    names are dataset-specific — read them from
+    GET /catalog/datasets/{dataset_id} (the `fields` array) before building a
+    select/where/group_by.
+  observed: '2026-07-27'
+  evidence: >-
+    GET /catalog/datasets?limit=1&select=dataset_id,metas returned
+    {"error_code":"ODSQLError","message":"ODSQL query is malformed: Unknown field:
+    metas. Clause(s) containing the error(s): select."}
+  source_operations: [getDatasets, getRecords, getDatasetsFacets, getRecordsFacets, exportDatasets, exportRecords]
+- status: 400
+  code: ODSQLError
+  title: Field not allowed in this clause
+  envelope: general
+  remediation: >-
+    Some catalogue fields are selectable but not filterable. Observed with
+    `where=data_visible=true`, which returns "Field data_visible is not allowed in
+    the current clause." Move the predicate to a supported field or filter
+    client-side.
+  observed: '2026-07-27'
+  source_operations: [getDatasets]
+- status: 401
+  code: null
+  title: Unauthorized
+  envelope: general
+  remediation: >-
+    Supply a credential. The vendor documents 401 for attempts to read a private
+    portal's catalogue without authentication. Pass
+    `Authorization: Apikey <KEY>` or `?apikey=<KEY>`; keys are created free from
+    https://electricitynorthwest.opendatasoft.com/account/.
+  declared_in_spec: true
+  source_operations: [all 16 operations]
+- status: 403-style
+  code: ForbiddenAccess
+  title: You don't have permission to access the requested resource
+  envelope: general
+  remediation: >-
+    Record-level data on this domain is gated behind a free registered account,
+    even where dataset metadata is public. Register at
+    https://electricitynorthwest.opendatasoft.com/pages/registration_log_in/ and
+    retry with an API key. Note this error is returned on the records endpoints
+    even though the OpenAPI declares only 400/401/429/500 — an undeclared code.
+  observed: '2026-07-27'
+  evidence: >-
+    GET /catalog/datasets/{id}/records returned
+    {"error_code":"ForbiddenAccess","message":"You don't have permission to access
+    the requested resource"} for dfes-lv-headroom-monitored, enwl_control_boundary,
+    biodiversity-tree-opportunity, lv_load_duration and enwl-lsoa-polygons.
+  declared_in_spec: false
+  source_operations: [getRecords, getRecord, exportRecords, exportRecordsCSV, exportRecordsParquet, exportRecordsGPX]
+- status: 429
+  code: '10002'
+  title: Too many requests on the domain
+  envelope: quota
+  remediation: >-
+    Back off until `reset_time` (the quota is daily and resets at midnight UTC).
+    Read X-RateLimit-Remaining proactively rather than waiting for the 429. An
+    authenticated user is documented to receive extended quotas. The domain
+    limit observed anonymously on 2026-07-27 was 5000 calls/day.
+  documented_example:
+    errorcode: 10002
+    reset_time: '2021-01-26T00:00:00Z'
+    limit_time_unit: day
+    call_limit: 10000
+    error: Too many requests on the domain. Please contact the domain administrator.
+  declared_in_spec: true
+  detail: rate-limits/electricity-north-west-rate-limits.yml
+  source_operations: [all 16 operations]
+- status: 500
+  code: null
+  title: Internal server error
+  envelope: general
+  remediation: >-
+    Retry. Every operation is a GET and therefore safe to retry without side
+    effects (see conventions/ — idempotency is inherent). Retries consume quota.
+  declared_in_spec: true
+  source_operations: [all 16 operations]
+gaps:
+- >-
+  No public error-code registry. `ODSQLError` and `ForbiddenAccess` are the only
+  string codes seen; there may be others.
+- >-
+  `ForbiddenAccess` is returned by the records endpoints but is not declared in
+  either OpenAPI document — a spec/behaviour divergence worth raising with the
+  provider.
+- No RFC 9457 problem+json, no `type` URI, no error documentation URLs.

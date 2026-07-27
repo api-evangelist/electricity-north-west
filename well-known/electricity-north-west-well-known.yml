@@ -1,0 +1,64 @@
+generated: '2026-07-27'
+method: searched
+source: >-
+  Live probes of the /.well-known/ discovery surface on every host reachable from
+  apis.yml (baseURL + humanURL) and the OpenAPI servers[] entries, 2026-07-27.
+description: >-
+  The SP Electricity North West open data portal is an Opendatasoft (now branded
+  Huwise) tenant, so the /.well-known/ surface it serves is the platform's, not
+  the network operator's. Exactly one document is published: an RFC 9116
+  security.txt pointing at the platform vendor's security team. The corporate
+  domain www.enwl.co.uk is behind a Cloudflare managed challenge and returns HTTP
+  403 to every non-browser client, so nothing under its /.well-known/ can be
+  retrieved — that is a block, not a confirmed absence, and is recorded as such.
+hosts:
+- host: https://electricitynorthwest.opendatasoft.com
+  role: API host + developer portal (baseURL for both Explore API versions)
+  documents:
+  - path: /.well-known/security.txt
+    standard: RFC 9116
+    status: 200
+    file: electricity-north-west-security.txt
+  - path: /.well-known/openid-configuration
+    standard: OpenID Connect Discovery 1.0
+    status: 404
+  - path: /.well-known/oauth-authorization-server
+    standard: RFC 8414
+    status: 404
+  - path: /.well-known/oauth-protected-resource
+    standard: RFC 9728
+    status: 404
+  - path: /.well-known/api-catalog
+    standard: RFC 9727
+    status: 404
+  - path: /.well-known/ai-plugin.json
+    standard: OpenAI plugin manifest
+    status: 404
+- host: https://www.enwl.co.uk
+  role: corporate website (Website pointer in apis.yml)
+  note: >-
+    Cloudflare managed challenge. Every path probed returns HTTP 403 to
+    non-browser clients, including /.well-known/security.txt. Absence cannot be
+    confirmed from outside a browser.
+  documents:
+  - path: /.well-known/security.txt
+    standard: RFC 9116
+    status: 403
+other_discovery_surfaces:
+- path: /robots.txt
+  status: 200
+  url: https://electricitynorthwest.opendatasoft.com/robots.txt
+  note: >-
+    Disallows /api/ for all crawlers except Googlebot, which is explicitly
+    allowed /api/ but disallowed the /exports/ paths. Declares the sitemap.
+- path: /sitemap.xml
+  status: 200
+  url: https://electricitynorthwest.opendatasoft.com/sitemap.xml
+  note: One <url> entry per published dataset landing page, with lastmod dates.
+- path: /api/explore/v2.1/catalog/exports/dcat
+  status: 200
+  url: https://electricitynorthwest.opendatasoft.com/api/explore/v2.1/catalog/exports/dcat
+  media_type: application/rdf+xml
+  note: >-
+    DCAT-AP catalogue export of all 146 datasets — the closest thing this portal
+    publishes to a machine-readable API/data catalogue document (4.9 MB).

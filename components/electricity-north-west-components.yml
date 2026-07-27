@@ -1,0 +1,93 @@
+generated: '2026-07-27'
+method: searched
+source: >-
+  npm registry, the opendatasoft GitHub organization, and the SP Electricity North
+  West portal's own embedded surfaces, probed 2026-07-27.
+description: >-
+  Electricity North West authors no UI component library. The embeddable
+  client-side surfaces available against this API are the Opendatasoft (Huwise)
+  platform's — a modern TypeScript/React visualisation SDK, a legacy AngularJS
+  widget library, and the portal's own hosted, embeddable pages (explore, chart,
+  map, API console). These are distinct from the server-side client in packages/:
+  they render Explore API responses in a browser rather than call the API from a
+  server.
+first_party_to: Opendatasoft SAS (Huwise) — the platform vendor
+first_party_to_provider: false
+families:
+- name: Opendatasoft Visualizations SDK
+  kind: js-component-library
+  repository: https://github.com/opendatasoft/ods-dataviz-sdk
+  loader_libraries:
+  - package: '@opendatasoft/visualizations'
+    registry: npm
+    version_seen: 0.35.0
+    url: https://www.npmjs.com/package/@opendatasoft/visualizations
+    install: npm install @opendatasoft/visualizations
+    description: "Opendatasoft's components to easily build dashboards and visualizations."
+  - package: '@opendatasoft/visualizations-react'
+    registry: npm
+    version_seen: 0.35.0
+    url: https://www.npmjs.com/package/@opendatasoft/visualizations-react
+    install: npm install @opendatasoft/visualizations-react
+    description: React wrapper for the visualization components.
+  - package: '@opendatasoft/api-client'
+    registry: npm
+    version_seen: 21.10.1
+    url: https://www.npmjs.com/package/@opendatasoft/api-client
+    role: data layer — fetches the Explore API responses the components render
+  official: true
+  note: >-
+    Same monorepo as the API client. Point the client at
+    https://electricitynorthwest.opendatasoft.com to render this provider's
+    datasets.
+- name: ODS Widgets
+  kind: angularjs-widget-library
+  repository: https://github.com/opendatasoft/ods-widgets
+  description: >-
+    "Components to easily build visualizations and interfaces from a data API" —
+    the platform's original AngularJS widget set, and what the portal's own
+    dataset pages historically used. Legacy relative to the Visualizations SDK.
+  official: true
+  version_header: >-
+    Requests from these widgets identify themselves with an ODS-Widgets-Version
+    header, which the API explicitly allows in Access-Control-Allow-Headers.
+hosted_embeddable_surfaces:
+- name: Explore
+  url: https://electricitynorthwest.opendatasoft.com/explore
+  kind: hosted dataset browser
+  status: 200
+- name: Chart builder
+  url: https://electricitynorthwest.opendatasoft.com/chart
+  kind: hosted chart composer
+  status: 200
+- name: Map builder
+  url: https://electricitynorthwest.opendatasoft.com/map
+  kind: hosted map composer
+  status: 200
+  note: Redirects to a saved map instance (/map/+<id>/edit/).
+- name: API console
+  url: https://electricitynorthwest.opendatasoft.com/api-console/explore/v2.1/
+  kind: hosted interactive API client
+  status: 200
+  detail: sandbox/electricity-north-west-sandbox.yml
+embed_analytics_headers:
+  headers: [ODS-API-Analytics-App, ODS-API-Analytics-Embed-Type, ODS-API-Analytics-Embed-Referrer, ODS-Widgets-Version]
+  note: >-
+    The API's Access-Control-Allow-Headers list names four embed-analytics headers,
+    which is direct evidence that embedding is a first-class, instrumented use
+    case for this platform rather than an afterthought.
+provider_authored:
+- name: SP ENW Future Energy Scenarios visualisation
+  url: https://spenw-open-data.github.io/
+  repository: https://github.com/spenw-open-data/spenw-open-data.github.io
+  kind: standalone web application (not a reusable component)
+  description: >-
+    A DFES 2025 scenario explorer published by SP Electricity North West on GitHub
+    Pages, covering six National Grid ESO-aligned scenarios across BSP, primary,
+    county, LAD, Lake District and network geographies. Ships the underlying data
+    as static CSV plus GeoJSON boundary files under CC BY 4.0. Configuration-driven
+    (scenarios.json / parameters.json) but not distributed as a package.
+  note: >-
+    Notably this application does NOT consume the Explore API — it reads static
+    files committed to the repo. Recorded as the provider's only first-party
+    front-end code.
