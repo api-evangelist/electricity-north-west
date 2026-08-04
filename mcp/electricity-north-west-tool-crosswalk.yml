@@ -30,7 +30,8 @@ surfaces:
     note: No GraphQL surface. /api/graphql returns 404.
   mcp:
     url: null
-    status: candidate — no server is published, so tools/list could not be called
+    status: candidate
+    status_raw: candidate
 shared_input_contract:
   note: >-
     Every operation accepts the same ODSQL clause set, which is why the tool
