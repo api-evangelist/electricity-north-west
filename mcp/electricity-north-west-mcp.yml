@@ -1,23 +1,16 @@
 generated: '2026-07-27'
 method: derived
 status: candidate
-source: >-
-  Tools derived one-per-operationId from
-  openapi/electricity-north-west-explore-api-v2-1-openapi.json. Searched first for
-  a published server: no MCP endpoint is advertised on the portal or in the vendor
-  documentation, /.well-known/oauth-protected-resource and
-  /.well-known/oauth-authorization-server both return 404, and no
-  first-party package exists in the npm @modelcontextprotocol scope or the MCP
-  registries.
-description: >-
-  Neither Electricity North West nor Opendatasoft (Huwise) publishes an MCP server
-  for this API. The tool list below is a CANDIDATE derived mechanically from the
-  16 Explore v2.1 operations — it is a design, not a deployment. It is worth
-  recording because this API is unusually well suited to MCP: read-only, fully
-  CORS-open, uniformly parameterised through ODSQL, and every operation is safe to
-  retry. Third-party generic Opendatasoft MCP servers do exist on npm and would
-  work against this domain; they are listed under third_party but are not
-  endorsed and are not first-party.
+source: 'Tools derived one-per-operationId from openapi/electricity-north-west-explore-api-v2-1-openapi.json.
+  Searched first for a published server: no MCP endpoint is advertised on the portal or in the vendor
+  documentation, /.well-known/oauth-protected-resource and /.well-known/oauth-authorization-server both
+  return 404, and no first-party package exists in the npm @modelcontextprotocol scope or the MCP registries.'
+description: 'Neither Electricity North West nor Opendatasoft (Huwise) publishes an MCP server for this
+  API. The tool list below is a CANDIDATE derived mechanically from the 16 Explore v2.1 operations — it
+  is a design, not a deployment. It is worth recording because this API is unusually well suited to MCP:
+  read-only, fully CORS-open, uniformly parameterised through ODSQL, and every operation is safe to retry.
+  Third-party generic Opendatasoft MCP servers do exist on npm and would work against this domain; they
+  are listed under third_party but are not endorsed and are not first-party.'
 server:
   name: electricity-north-west
   transport: null
@@ -105,32 +98,28 @@ tools:
   http: GET /catalog/datasets/{dataset_id}/exports/gpx
   auth_required: true
 agent_notes:
-- >-
-  All 16 tools are read-only. There is no write, no state and no consequence
-  beyond quota consumption — the safest possible tool surface.
-- >-
-  Tool inputs should be inherited verbatim from each operation's OpenAPI
-  parameters (the ODSQL clause set: select, where, group_by, order_by, refine,
-  exclude, limit, offset, lang, timezone). See mcp/electricity-north-west-tool-crosswalk.yml.
-- >-
-  An agent MUST call get_dataset before query_records: ODSQL field names are
-  dataset-specific and an unknown field returns 400 ODSQLError.
-- >-
-  Anonymous callers can reach metadata only. query_records and the dataset export
-  tools return error_code "ForbiddenAccess" without an API key.
-- >-
-  Budget against a shared 5000 calls/day domain quota. Prefer export_records over
-  paginating query_records.
+- All 16 tools are read-only. There is no write, no state and no consequence beyond quota consumption
+  — the safest possible tool surface.
+- 'Tool inputs should be inherited verbatim from each operation''s OpenAPI parameters (the ODSQL clause
+  set: select, where, group_by, order_by, refine, exclude, limit, offset, lang, timezone). See mcp/electricity-north-west-tool-crosswalk.yml.'
+- 'An agent MUST call get_dataset before query_records: ODSQL field names are dataset-specific and an
+  unknown field returns 400 ODSQLError.'
+- Anonymous callers can reach metadata only. query_records and the dataset export tools return error_code
+  "ForbiddenAccess" without an API key.
+- Budget against a shared 5000 calls/day domain quota. Prefer export_records over paginating query_records.
 third_party:
 - package: '@pipeworx/mcp-opendatasoft'
   registry: npm
   url: https://www.npmjs.com/package/@pipeworx/mcp-opendatasoft
-  description: >-
-    "Generic Opendatasoft portal client (3000+ public OpenDataSoft instances)" —
-    would work against electricitynorthwest.opendatasoft.com.
+  description: '"Generic Opendatasoft portal client (3000+ public OpenDataSoft instances)" — would work
+    against electricitynorthwest.opendatasoft.com.'
   official: false
   endorsed: false
-- note: >-
-    The same publisher ships ~20 domain-pinned Opendatasoft MCP servers
-    (@pipeworx/mcp-data-paris, -odre, -sncf, …). None targets Electricity North
-    West.
+- note: The same publisher ships ~20 domain-pinned Opendatasoft MCP servers (@pipeworx/mcp-data-paris,
+    -odre, -sncf, …). None targets Electricity North West.
+deployment:
+  mode: none
+  verified: derived
+  tools: 16
+  checked: '2026-08-12'
+  source: catalog MCP census
