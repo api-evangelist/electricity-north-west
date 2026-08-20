@@ -64,6 +64,13 @@ apis:
   - Open Data
   - Catalog
   - Records
+  - Export
+  - DCAT
+  - Energy
+  tags_raw:
+  - Open Data
+  - Catalog
+  - Records
   - Exports
   - DCAT
   - Energy
@@ -92,6 +99,12 @@ apis:
   humanURL: https://electricitynorthwest.opendatasoft.com/api
   baseURL: https://electricitynorthwest.opendatasoft.com/api/explore/v2.0
   tags:
+  - Open Data
+  - Catalog
+  - Records
+  - Export
+  - Energy
+  tags_raw:
   - Open Data
   - Catalog
   - Records
