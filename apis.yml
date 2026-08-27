@@ -47,38 +47,16 @@ created: '2026-07-27'
 modified: '2026-07-27'
 specificationVersion: '0.23'
 apis:
-- aid: electricity-north-west:explore-api-v2-1
-  name: SP Electricity North West Open Data Explore API v2.1
-  description: >-
-    The current Opendatasoft Explore REST API v2.1 scoped to the SP Electricity North
-    West open data domain. Read-only (GET only, JSON), 16 documented paths covering
-    catalogue search over the 146 published datasets, per-dataset metadata and field
-    schemas, record query, facets, attachments, and bulk exports in CSV, JSON,
-    Parquet, GPX and DCAT-AP. All endpoints accept the Opendatasoft Query Language
-    (ODSQL). The OpenAPI 3.0.3 document was harvested verbatim from the live host on
-    2026-07-27 and declares a single `apikey` security scheme; an API key is issued
-    from a free self-serve portal account.
+- aid: electricity-north-west:electricity-north-west-catalog-api
+  name: Electricity North West Catalog API
+  description: API to enumerate datasets
   humanURL: https://electricitynorthwest.opendatasoft.com/api
   baseURL: https://electricitynorthwest.opendatasoft.com/api/explore/v2.1
   tags:
-  - Open Data
   - Catalog
-  - Records
-  - Export
-  - DCAT
-  - Energy
-  tags_raw:
-  - Open Data
-  - Catalog
-  - Records
-  - Exports
-  - DCAT
-  - Energy
   properties:
   - type: OpenAPI
-    url: openapi/electricity-north-west-explore-api-v2-1-openapi.json
-  - type: Overlay
-    url: overlays/electricity-north-west-explore-api-v2-1-overlay.yaml
+    url: openapi/electricity-north-west-catalog-api-openapi.yml
   - type: APIReference
     url: https://electricitynorthwest.opendatasoft.com/api-console/explore/v2.1/
   - type: Documentation
@@ -87,39 +65,29 @@ apis:
     url: https://electricitynorthwest.opendatasoft.com/api
   - type: Data
     url: https://electricitynorthwest.opendatasoft.com/explore
-- aid: electricity-north-west:explore-api-v2-0
-  name: SP Electricity North West Open Data Explore API v2.0
-  description: >-
-    The previous-generation Opendatasoft Explore REST API v2.0, still served on the
-    SP Electricity North West domain alongside v2.1. Same 16-path read-only shape —
-    catalogue, dataset metadata, records, facets, attachments and CSV/JSON/Parquet/GPX
-    exports — against the same 146 datasets. Retained here because it is a distinct
-    live base URL with its own OpenAPI 3.0.3 contract, harvested verbatim on
-    2026-07-27.
+- aid: electricity-north-west:electricity-north-west-dataset-api
+  name: Electricity North West Dataset API
+  description: API to work on records
   humanURL: https://electricitynorthwest.opendatasoft.com/api
-  baseURL: https://electricitynorthwest.opendatasoft.com/api/explore/v2.0
+  baseURL: https://electricitynorthwest.opendatasoft.com/api/explore/v2.1
   tags:
-  - Open Data
-  - Catalog
-  - Records
-  - Export
-  - Energy
-  tags_raw:
-  - Open Data
-  - Catalog
-  - Records
-  - Exports
-  - Energy
+  - Dataset
   properties:
   - type: OpenAPI
-    url: openapi/electricity-north-west-explore-api-v2-0-openapi.json
-  - type: Overlay
-    url: overlays/electricity-north-west-explore-api-v2-0-overlay.yaml
+    url: openapi/electricity-north-west-dataset-api-openapi.yml
+  - type: APIReference
+    url: https://electricitynorthwest.opendatasoft.com/api-console/explore/v2.1/
   - type: Documentation
     url: https://help.huwise.com/apis/ods-explore-v2/
   - type: Portal
     url: https://electricitynorthwest.opendatasoft.com/api
+  - type: Data
+    url: https://electricitynorthwest.opendatasoft.com/explore
 common:
+- type: Overlay
+  url: overlays/electricity-north-west-explore-api-v2-1-overlay.yaml
+- type: Overlay
+  url: overlays/electricity-north-west-explore-api-v2-0-overlay.yaml
 - type: Website
   url: https://www.enwl.co.uk/
 - type: DeveloperPortal
