@@ -30,6 +30,17 @@ description: >-
   and the portal is a real, verifiable implementation of it. Note that the corporate
   site www.enwl.co.uk sits behind a Cloudflare managed challenge and returns HTTP 403
   to every non-browser client, so no part of the main website is machine-readable.
+deliveryModel:
+  model: saas
+  open_source: false
+  commercial: true
+  callable_host: false
+  label: Hosted service · you call their endpoint
+  confidence: medium
+  source:
+  - pricing
+  generated: '2026-08-28'
+  method: derived
 image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
 tags:
 - Energy
