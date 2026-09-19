@@ -98,6 +98,8 @@ apis:
   humanURL: https://electricitynorthwest.opendatasoft.com/api
   baseURL: https://electricitynorthwest.opendatasoft.com/api/explore/v2.1
   tags:
+  - Datasets
+  tags_raw:
   - Dataset
   properties:
   - type: OpenAPI
