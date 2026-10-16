@@ -1,0 +1,14 @@
+{
+  "repo": "electricity-north-west",
+  "feeds": [
+    {
+      "source": "https://news.enwl.co.uk/",
+      "feed_url": "https://news.enwl.co.uk/feed/rss",
+      "title": "",
+      "saved": 1,
+      "method": "discovered"
+    }
+  ],
+  "post_count": 1,
+  "fetched": "2026-10-10T13:15:00Z"
+}
