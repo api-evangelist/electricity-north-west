@@ -113,6 +113,8 @@ apis:
   - type: Data
     url: https://electricitynorthwest.opendatasoft.com/explore
 common:
+- type: PostmanWorkspace
+  url: https://www.postman.com/kinlaneapi/electricity-north-west/overview
 - type: Overlay
   url: overlays/electricity-north-west-explore-api-v2-1-overlay.yaml
 - type: Overlay
