@@ -1,4 +1,4 @@
-# Electricity North West (electricity-north-west)
+# Electricity North West
 
 <!-- API-EVANGELIST-PROVENANCE:BEGIN -->
 > ### About this repository
@@ -64,105 +64,141 @@
 > Full detail: **[Where this data comes from](https://apievangelist.com/about/where-our-data-comes-from)**
 <!-- API-EVANGELIST-PROVENANCE:END -->
 
-Electricity North West — rebranded SP Electricity North West in August 2025 after Iberdrola acquired it and folded it in alongside SP Energy Networks — is the regulated electricity distribution network operator for the North West of England, running roughly 13,000 km of overhead line and more than 44,000 km of underground cable from Cumbria to Manchester. It is a poles-and-wires business in the regulated middle of the United Kingdom value chain: it owns the meter point and the network, it earns a regulated revenue under Ofgem's RIIO-ED2 price control, and it never bills the household — the supplier does.
+Electricity North West — rebranded SP Electricity North West in August 2025 after Iberdrola acquired it and folded it in alongside SP Energy Networks — is the regulated electricity distribution network operator for the North West of England, running roughly 13,000 km of overhead line and more than 44,000 km of underground cable from Cumbria to Manchester. It is a poles-and-wires business in the regulated middle of the United Kingdom value chain: it owns the meter point and the network, it earns a regulated revenue under Ofgem's RIIO-ED2 price control, and it never bills the household — the supplier does. Its API posture is a clean split and worth stating plainly. On the MARKET-DATA side it is genuinely API-native for a network operator: it runs an Opendatasoft-hosted open data portal at electricitynorthwest.opendatasoft.com carrying 146 datasets — embedded capacity register, DFES scenarios, LV headroom and peak demand, network capacity heatmaps, GSP connection queue, GIS conductor and substation layers — served through the documented Opendatasoft Explore REST API v2.1 (and legacy v2.0) with a real OpenAPI 3.0.3 contract, a DCAT-AP catalogue export, and an in-portal API console. 96 of those datasets are CC BY 4.0 and 8 are Open Government Licence v3.0, but 41 sit under a bespoke "SP ENW Shared Licence" rather than an open one. On the CONSUMER-DATA side there is nothing: the United Kingdom has no consumer energy data-portability right equivalent to Australia's Consumer Data Right, Great Britain's smart-meter mandate produced infrastructure (the licensed Smart DCC) rather than a data right, Green Button has no UK footprint, and Electricity North West publishes no customer usage or billing API of any kind. The obligation that actually binds it is Ofgem's Data Best Practice Guidance under the RIIO-ED2 digitalisation licence condition — an open-data duty, not a consumer data right — and the portal is a real, verifiable implementation of it. Note that the corporate site www.enwl.co.uk sits behind a Cloudflare managed challenge and returns HTTP 403 to every non-browser client, so no part of the main website is machine-readable.
 
-Its API posture is a clean split. On the **market-data** side it is genuinely API-native for a network operator: an Opendatasoft-hosted open data portal carrying 146 datasets, served through the documented Explore REST API v2.1 (and legacy v2.0) with a real OpenAPI 3.0.3 contract, a DCAT-AP catalogue export, and an in-portal API console. On the **consumer-data** side there is nothing — and no UK mandate requires there to be. The United Kingdom has no consumer energy data-portability right equivalent to Australia's Consumer Data Right; Great Britain's smart-meter mandate produced infrastructure (the licensed Smart DCC) rather than a data right; Green Button has no UK footprint.
+**Areas:** Energy · United Kingdom · Utilities · Electricity · Grid · Distribution Network · Open Data · DER · Renewables · Energy Markets · Smart Metering
 
-**APIs.json:** [https://raw.githubusercontent.com/api-evangelist/electricity-north-west/refs/heads/main/apis.yml](https://raw.githubusercontent.com/api-evangelist/electricity-north-west/refs/heads/main/apis.yml)
+## Electricity North West on APIs.io
 
-## Tags
+Everything profiled for Electricity North West is published on APIs.io rather than in this repository. Start at the provider page — **[apis.io/providers/electricity-north-west/](https://apis.io/providers/electricity-north-west/)** — or go straight to one of the APIs or properties below.
 
-- Energy
-- United Kingdom
-- Utilities
-- Electricity
-- Grid
-- Distribution Network
-- Open Data
-- DER
-- Renewables
-- Energy Markets
-- Smart Metering
+### APIs (2)
 
-## Timestamps
+- [Electricity North West Catalog API](https://apis.io/apis/electricity-north-west/electricity-north-west-catalog-api/) — API to enumerate datasets
+- [Electricity North West Dataset API](https://apis.io/apis/electricity-north-west/electricity-north-west-dataset-api/) — API to work on records
 
-- **Created:** 2026-07-27
-- **Modified:** 2026-07-27
+### Published properties
 
-## APIs
+Each property below is a page on APIs.io carrying the machine-readable artifact and what it says.
 
-### SP Electricity North West Open Data Explore API v2.1
+#### MCP servers (1)
 
-The current Opendatasoft Explore REST API v2.1 scoped to the SP Electricity North West open data domain. Read-only (GET only, JSON), 16 documented paths covering catalogue search over the 146 published datasets, per-dataset metadata and field schemas, record query, facets, attachments, and bulk exports in CSV, JSON, Parquet, GPX and DCAT-AP. All endpoints accept the Opendatasoft Query Language (ODSQL). The OpenAPI 3.0.3 document was harvested verbatim from the live host on 2026-07-27 and declares a single `apikey` security scheme; an API key is issued from a free self-serve portal account.
+Model Context Protocol servers that expose the API to agents.
 
-- **Human URL:** [https://electricitynorthwest.opendatasoft.com/api](https://electricitynorthwest.opendatasoft.com/api)
-- **Base URL:** `https://electricitynorthwest.opendatasoft.com/api/explore/v2.1`
+- [electricity-north-west](https://apis.io/servers/electricity-north-west/electricity-north-west/)
 
-#### Tags
+#### Examples (6)
 
-- Open Data
-- Catalog
-- Records
-- Exports
-- DCAT
-- Energy
+Example requests and responses.
 
-#### Properties
+- [Electricity North West Catalog Facets License Example](https://apis.io/examples/electricity-north-west/electricity-north-west-catalog-facets-license-example/)
+- [Electricity North West Forbidden Records Example](https://apis.io/examples/electricity-north-west/electricity-north-west-forbidden-records-example/)
+- [Electricity North West Get Dataset Example](https://apis.io/examples/electricity-north-west/electricity-north-west-get-dataset-example/)
+- [Electricity North West List Datasets Example](https://apis.io/examples/electricity-north-west/electricity-north-west-list-datasets-example/)
+- [Electricity North West List Export Formats Example](https://apis.io/examples/electricity-north-west/electricity-north-west-list-export-formats-example/)
+- [Electricity North West Odsql Error Example](https://apis.io/examples/electricity-north-west/electricity-north-west-odsql-error-example/)
 
-- [OpenAPI](openapi/electricity-north-west-explore-api-v2-1-openapi.json) — [OpenAPI Specification](https://spec.openapis.org/oas/latest.html)
-- [API Reference](https://electricitynorthwest.opendatasoft.com/api-console/explore/v2.1/)
-- [Documentation](https://help.huwise.com/apis/ods-explore-v2/)
-- [Portal](https://electricitynorthwest.opendatasoft.com/api)
-- [Data](https://electricitynorthwest.opendatasoft.com/explore)
+#### Collections (2)
 
-### SP Electricity North West Open Data Explore API v2.0
+Postman and Open Collection request collections.
 
-The previous-generation Opendatasoft Explore REST API v2.0, still served on the SP Electricity North West domain alongside v2.1. Same 16-path read-only shape — catalogue, dataset metadata, records, facets, attachments and CSV/JSON/Parquet/GPX exports — against the same 146 datasets. Retained here because it is a distinct live base URL with its own OpenAPI 3.0.3 contract, harvested verbatim on 2026-07-27.
+- [Explore API](https://apis.io/collections/electricity-north-west/open-electricity-north-west-explore-api-v2-0/)
+- [Explore API](https://apis.io/collections/electricity-north-west/open-electricity-north-west-explore-api-v2-1/)
 
-- **Human URL:** [https://electricitynorthwest.opendatasoft.com/api](https://electricitynorthwest.opendatasoft.com/api)
-- **Base URL:** `https://electricitynorthwest.opendatasoft.com/api/explore/v2.0`
+#### Overlays (2)
 
-#### Tags
+OpenAPI overlays, including conversational phrasing for each operation.
 
-- Open Data
-- Catalog
-- Records
-- Exports
-- Energy
+- [Electricity North West Explore Api V2 0 Overlay](https://apis.io/overlays/electricity-north-west/electricity-north-west-explore-api-v2-0-overlay/)
+- [Electricity North West Explore Api V2 1 Overlay](https://apis.io/overlays/electricity-north-west/electricity-north-west-explore-api-v2-1-overlay/)
 
-#### Properties
+#### Security (3)
 
-- [OpenAPI](openapi/electricity-north-west-explore-api-v2-0-openapi.json) — [OpenAPI Specification](https://spec.openapis.org/oas/latest.html)
-- [Documentation](https://help.huwise.com/apis/ods-explore-v2/)
-- [Portal](https://electricitynorthwest.opendatasoft.com/api)
+Authentication, trust centre, and vulnerability disclosure.
 
-## Common Properties
+- [Electricity North West Authentication](https://apis.io/security/electricity-north-west/electricity-north-west-authentication/)
+- [Electricity North West Domain Security](https://apis.io/security/electricity-north-west/electricity-north-west-domain-security/)
+- [Electricity North West Vulnerability Disclosure](https://apis.io/security/electricity-north-west/electricity-north-west-vulnerability-disclosure/)
+
+#### OAuth scopes (1)
+
+The permissions the API asks for.
+
+- [Electricity North West Scopes](https://apis.io/scopes/electricity-north-west/electricity-north-west-scopes/)
+
+#### Rate limits (1)
+
+Published request limits.
+
+- [Electricity North West Rate Limits](https://apis.io/rate-limits/electricity-north-west/electricity-north-west-rate-limits/)
+
+## Where to find this API
+
+Links to the company's own pages. This repository publishes no copy of their specifications — the canonical document is theirs and lives at the URLs below.
 
 - [Website](https://www.enwl.co.uk/)
-- [Blog](https://news.enwl.co.uk/)
-- [LinkedIn](https://www.linkedin.com/company/electricity-north-west)
-- [Portal](https://electricitynorthwest.opendatasoft.com/)
 - [Documentation](https://electricitynorthwest.opendatasoft.com/api)
-- [Data](https://electricitynorthwest.opendatasoft.com/explore)
-- [Data — DCAT-AP catalogue](https://electricitynorthwest.opendatasoft.com/api/explore/v2.1/catalog/exports/dcat)
-- [Registration](https://electricitynorthwest.opendatasoft.com/pages/registration_log_in/)
-- [Regulator — Ofgem Data Best Practice Guidance](https://www.ofgem.gov.uk/sites/default/files/2024-10/Track_Changes_Data_Best_Practice_Guidance_v301728394292260.pdf)
+- [Getting started](https://help.huwise.com/apis/ods-explore-v2/#section/Getting-Started)
+- [API reference](https://help.huwise.com/apis/ods-explore-v2/)
+- [Sign up](https://electricitynorthwest.opendatasoft.com/pages/registration_log_in/)
+- [Blog](https://news.enwl.co.uk/)
+- [Security](https://www.huwise.com/en/security/)
+- [Terms of service](https://www.enwl.co.uk/about-us/terms-and-conditions/)
+- [Privacy policy](https://www.enwl.co.uk/misc/privacy-policy/)
+- [GitHub](https://github.com/spenw-open-data)
+- [Status](https://status.huwise.com/)
 
-## Mandate Posture
+## API Evangelist rating
 
-| Question | Answer |
-| --- | --- |
-| Mandate regime | `other` — Ofgem Data Best Practice Guidance under the RIIO-ED2 digitalisation licence condition ("presumed open") |
-| Mandate status | `live-implemented` — verified by a live OpenAPI 3.0.3 contract, a 146-dataset catalogue and a 4.9 MB DCAT-AP export, all served anonymously on 2026-07-27 |
-| Data standard | Opendatasoft Explore API v2.1 (OpenAPI 3.0.3) + DCAT-AP; no Green Button / ESPI / CDR / OCPP / OpenADR / IEEE 2030.5 / IEC CIM reference found |
-| Consumer data API | No — the UK has no consumer energy data right, and the distributor does not hold the retail relationship |
-| Market data open | Yes — 146 datasets, 96 CC BY 4.0 and 8 Open Government Licence v3.0 (41 under a bespoke "SP ENW Shared Licence") |
-| Access gate | `self-serve` — free portal account, then an API key; catalogue and DCAT are anonymous, record/export data is not |
-| Auth model | API key (single `apikey` security scheme in both OpenAPI documents); no OAuth2, no OIDC, no mTLS |
-| Home market | United Kingdom |
+**Kin Score 59.6** — strong · rubric 0.25.0 · scored 2026-10-23
 
-See [`review.yml`](review.yml) for every URL probed, its HTTP status, and the evidence behind each answer above.
+| Facet | Score |
+|---|---|
+| Discoverability | 73.2 |
+| Contract quality | 54.2 |
+| Contract governance | 4.5 |
+| Operational transparency | 84.2 |
+| Developer ergonomics | 77.5 |
+| Access clarity | 34.2 |
 
-## Maintainers
+**Agent readiness 33.0** — agent-ready
 
-- Kin Lane — kin@apievangelist.com
+| Agent-readiness dimension | Result |
+|---|---|
+| Spec Presence | yes |
+| Agentic Access | — |
+| Reversibility Documented | na |
+| MCP Server | — |
+| Auth Clarity | bearer (partial credit) |
+| Idempotency | na |
+| Error Semantics | derived (partial credit) |
+| OpenAPI Examples | verified |
+| Rate Limit Signal | documented (partial credit) |
+| Event Surface Described | — |
+| Agent Skills | derived (partial credit) |
+| Well Known Catalog | — |
+| Consent Identity | — |
+| Agent Card | — |
+| Dry Run Mode | na |
+| Delegated Identity | — |
+| Protected Resource Metadata | — |
+| Dynamic Client Registration | — |
+| Agentic Commerce | — |
+| Pagination Ratio | paginated |
+| Operation Distinctiveness | distinct |
+
+**Regulatory alignment 45.9** — Energy & Utilities
+
+The rubric is published at [github.com/api-evangelist/kin-score](https://github.com/api-evangelist/kin-score). The per-check breakdown behind these numbers — which checks were earned, partial or missed — along with score history and how this provider compares to its peers, is available at [apis.io/providers/electricity-north-west/](https://apis.io/providers/electricity-north-west/).
+
+## How this profile is made
+
+API Evangelist profiles a company's public API surface the way a developer would find it: the website, developer portal and documentation, the specifications it publishes, its public repositories, and its pricing, status and changelog pages. From that it derives the properties above — contracts split per API, workflows, schemas, collections, governance rules, plans and rate limits — and scores them against the published [Kin Score rubric](https://github.com/api-evangelist/kin-score).
+
+The artifacts are published on [APIs.io](https://apis.io), not in this repository. This repository is the public record for Electricity North West: the place to say something is wrong, missing or out of date, and to ask for a re-score or a removal.
+
+## Open an issue
+
+- **Something about this listing** — a wrong description, a missing API, a stale artifact or a question about the rating: [open an issue on this repository](https://github.com/api-evangelist/electricity-north-west/issues/new).
+- **A new API, or one that is not in the catalog yet** — [submit it on APIs.io](https://apis.io/add/).
+- **Anything else** — [the APIs.io inbox](https://github.com/api-search/inbox/issues/new) or [info@apievangelist.com](mailto:info@apievangelist.com).
